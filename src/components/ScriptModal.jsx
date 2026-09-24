@@ -3,6 +3,21 @@ import { X, Copy, Check, ExternalLink, ShieldCheck, CheckCircle2 } from 'lucide-
 
 const FALLBACK_IMG = "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&auto=format&fit=crop&q=60";
 
+function getMissionHint(label = '', url = '') {
+  const l = label.toLowerCase();
+  const u = url.toLowerCase();
+  if (l.includes('youtube') || u.includes('youtube') || u.includes('youtu.be')) {
+    return 'ติดตามช่องเพื่อปลดล็อก';
+  }
+  if (l.includes('discord') || u.includes('discord')) {
+    return 'เข้าร่วมเซิร์ฟเวอร์คอมมูนิตี้';
+  }
+  if (l.includes('ไลค์') || l.includes('like') || l.includes('comment') || l.includes('คอมเมนต์')) {
+    return 'กดไลค์และคอมเมนต์คลิป';
+  }
+  return 'ทำภารกิจเพื่อปลดล็อค';
+}
+
 export default function ScriptModal({ script, settings = {}, onClose, onCopy }) {
   // If lock is explicitly disabled in admin (lockEnabled === false), unlock immediately
   const isLockRequired = settings.lockEnabled !== false;
@@ -68,7 +83,7 @@ export default function ScriptModal({ script, settings = {}, onClose, onCopy }) 
     setTimeout(() => {
       setCompletedMissions((prev) => ({ ...prev, [m.id]: true }));
       setVerifyingId(null);
-    }, 3000);
+    }, 2800);
   };
 
   const handleLootlabsClick = () => {
@@ -149,9 +164,13 @@ export default function ScriptModal({ script, settings = {}, onClose, onCopy }) 
               ) : (
                 /* 3-Step Missions Sub2Unlock Mode */
                 <div className="s2u-gate-section">
-                  <div className="s2u-icon">🔒</div>
-                  <div className="s2u-title">ภารกิจปลดล็อคสคริปต์ (Sub2Unlock)</div>
-                  <p className="s2u-desc">ทำภารกิจด้านล่างให้ครบเพื่อรับโค้ดสคริปต์ฟรี</p>
+                  <div className="s2u-head-wrap">
+                    <div className="s2u-head-badge">
+                      <span className="s2u-lock-pulse">🔒</span>
+                      <span>ภารกิจปลดล็อคสคริปต์ (Sub2Unlock)</span>
+                    </div>
+                    <p className="s2u-desc">ทำภารกิจด้านล่างให้ครบเพื่อรับโค้ดสคริปต์ฟรี</p>
+                  </div>
 
                   <div className="s2u-missions-list">
                     {missions.map((m, idx) => {
@@ -160,44 +179,68 @@ export default function ScriptModal({ script, settings = {}, onClose, onCopy }) 
 
                       return (
                         <div key={m.id} className={`s2u-mission-item ${isDone ? 'done' : ''}`}>
-                          <div className="s2u-mission-info">
+                          <div className="s2u-mission-left">
                             <span className="s2u-mission-num">
                               {isDone ? '✓' : idx + 1}
                             </span>
-                            <span className="s2u-mission-label">{m.label}</span>
+                            <div className="s2u-mission-texts">
+                              <span className="s2u-mission-label">{m.label}</span>
+                              <span className="s2u-mission-subhint">
+                                {isDone ? (
+                                  <span className="text-done-success">✓ ทำภารกิจสำเร็จแล้ว</span>
+                                ) : (
+                                  getMissionHint(m.label, m.url)
+                                )}
+                              </span>
+                            </div>
                           </div>
 
-                          <button
-                            type="button"
-                            className={`s2u-mission-action-btn ${isDone ? 'btn-done' : ''}`}
-                            onClick={() => handleStartMission(m)}
-                            disabled={isDone || Boolean(verifyingId)}
-                          >
+                          <div className="s2u-mission-action">
                             {isDone ? (
-                              <>
-                                <CheckCircle2 size={14} /> สำเร็จแล้ว
-                              </>
+                              <div className="s2u-status-done">
+                                <CheckCircle2 size={15} />
+                                <span>สำเร็จ</span>
+                              </div>
                             ) : isVerifying ? (
-                              <>⏳ กำลังตรวจ...</>
+                              <div className="s2u-status-verifying">
+                                <span className="s2u-spinner-dot"></span>
+                                <span>กำลังตรวจ...</span>
+                              </div>
                             ) : (
-                              <>
-                                ทำภารกิจ <ExternalLink size={12} />
-                              </>
+                              <button
+                                type="button"
+                                className="s2u-action-btn"
+                                onClick={() => handleStartMission(m)}
+                              >
+                                <span>ทำภารกิจ</span>
+                                <ExternalLink size={13} />
+                              </button>
                             )}
-                          </button>
+                          </div>
                         </div>
                       );
                     })}
                   </div>
 
-                  <div style={{ marginTop: '16px' }}>
+                  <div className="s2u-footer-action">
                     {allMissionsDone ? (
                       <button className="s2u-unlock-now-btn" onClick={handleCompleteUnlock}>
-                        <ShieldCheck size={18} /> ปลดล็อคและดูสคริปต์ทันที!
+                        <ShieldCheck size={18} /> ปลดล็อคและรับโค้ดสคริปต์ทันที!
                       </button>
                     ) : (
-                      <div className="s2u-progress-hint">
-                        ความคืบหน้า: {Object.values(completedMissions).filter(Boolean).length}/{missions.length} ภารกิจ
+                      <div className="s2u-progress-bar-wrap">
+                        <div className="s2u-progress-info">
+                          <span>ความคืบหน้าภารกิจ</span>
+                          <b>{Object.values(completedMissions).filter(Boolean).length}/{missions.length} ภารกิจ</b>
+                        </div>
+                        <div className="s2u-progress-track">
+                          <div
+                            className="s2u-progress-fill"
+                            style={{
+                              width: `${(Object.values(completedMissions).filter(Boolean).length / Math.max(missions.length, 1)) * 100}%`
+                            }}
+                          ></div>
+                        </div>
                       </div>
                     )}
                   </div>

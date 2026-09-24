@@ -1,13 +1,17 @@
 import React from 'react';
 import { Search } from 'lucide-react';
+import SpideyLogo from './SpideyLogo';
 
 export default function Navbar({ search, setSearch, settings }) {
   return (
     <nav className="navbar">
       <div className="navbar-inner">
         <div className="nav-logo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-          <span className="nav-logo-dot"></span>
-          {settings.siteTitle || 'Spidey'}
+          <SpideyLogo size={28} />
+          <div className="nav-logo-text-group">
+            <span className="nav-logo-title">{settings.siteTitle || 'Spidey'}</span>
+            <span className="nav-logo-badge">HUB</span>
+          </div>
         </div>
 
         <div className="nav-search">
