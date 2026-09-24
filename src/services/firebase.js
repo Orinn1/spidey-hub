@@ -7,11 +7,12 @@ const FIREBASE_CONFIG = {
 
 export async function fetchScriptsFromFirebase() {
   // 1. Try local storage cache first for instant render
-  let cached = [];
+  let cached = null;
   try {
     const raw = localStorage.getItem('spidey_scripts_cache');
-    if (raw) {
-      cached = JSON.parse(raw);
+    if (raw !== null) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) cached = parsed;
     }
   } catch (e) {
     console.warn('Cache parse error:', e);
@@ -19,13 +20,13 @@ export async function fetchScriptsFromFirebase() {
 
   // 2. Fetch fresh data from Firestore REST API
   try {
-    const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_CONFIG.projectId}/databases/(default)/documents/hub/database?key=${FIREBASE_CONFIG.apiKey}`;
+    const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_CONFIG.projectId}/databases/(default)/documents/hub/database?key=${FIREBASE_CONFIG.apiKey}&_t=${Date.now()}`;
     const res = await fetch(url, { cache: 'no-cache' });
     if (res.ok) {
       const data = await res.json();
-      if (data.fields && data.fields.scriptsJson && data.fields.scriptsJson.stringValue) {
+      if (data.fields && data.fields.scriptsJson && typeof data.fields.scriptsJson.stringValue === 'string') {
         const parsed = JSON.parse(data.fields.scriptsJson.stringValue);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           localStorage.setItem('spidey_scripts_cache', JSON.stringify(parsed));
           return { scripts: parsed, source: 'cloud' };
         }
@@ -35,18 +36,18 @@ export async function fetchScriptsFromFirebase() {
     console.warn('[Firestore Live Sync Warning]:', err.message);
   }
 
-  // 3. Fallback to cached or default scripts
-  if (cached && cached.length > 0) {
+  // 3. Fallback to cached or empty
+  if (Array.isArray(cached)) {
     return { scripts: cached, source: 'cache' };
   }
 
-  return { scripts: FALLBACK_SCRIPTS, source: 'fallback' };
+  return { scripts: [], source: 'empty' };
 }
 
 export async function fetchSettingsFromFirebase() {
   try {
-    const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_CONFIG.projectId}/databases/(default)/documents/hub/database?key=${FIREBASE_CONFIG.apiKey}`;
-    const res = await fetch(url);
+    const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_CONFIG.projectId}/databases/(default)/documents/hub/database?key=${FIREBASE_CONFIG.apiKey}&_t=${Date.now()}`;
+    const res = await fetch(url, { cache: 'no-cache' });
     if (res.ok) {
       const data = await res.json();
       if (data.fields && data.fields.settingsJson && data.fields.settingsJson.stringValue) {
@@ -59,7 +60,7 @@ export async function fetchSettingsFromFirebase() {
   return {
     siteTitle: "Spidey",
     siteHandle: "@Spidey",
-    announcementText: "อัปเดตสคริปต์ Steal An Egg และ Blox Fruits ตัวล่าสุดแล้ววันนี้!",
+    announcementText: "",
     discordUrl: "https://discord.gg",
     youtubeUrl: "https://youtube.com"
   };

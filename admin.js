@@ -35,6 +35,18 @@ async function fbWrite(data) {
         body: JSON.stringify({ fields })
     });
     if (!res.ok) throw new Error('Firestore write failed: ' + res.status);
+
+    // Cross-tab immediate sync
+    try {
+        if (data.scripts !== undefined) {
+            localStorage.setItem('spidey_scripts_cache', JSON.stringify(data.scripts));
+        }
+        localStorage.setItem('spidey_channel_ping', Date.now().toString());
+        const bc = new BroadcastChannel('spidey_hub_channel');
+        bc.postMessage({ type: 'SYNC_UPDATE', timestamp: Date.now() });
+        bc.close();
+    } catch(e) {}
+
     return await res.json();
 }
 

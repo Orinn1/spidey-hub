@@ -5,10 +5,17 @@ import ScriptCard from './components/ScriptCard';
 import ScriptModal from './components/ScriptModal';
 import Toast from './components/Toast';
 import { fetchScriptsFromFirebase, fetchSettingsFromFirebase } from './services/firebase';
-import { FALLBACK_SCRIPTS } from './data/fallbackScripts';
-
 export default function App() {
-  const [scripts, setScripts] = useState(FALLBACK_SCRIPTS);
+  const [scripts, setScripts] = useState(() => {
+    try {
+      const raw = localStorage.getItem('spidey_scripts_cache');
+      if (raw !== null) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (_) {}
+    return [];
+  });
   const [settings, setSettings] = useState({
     siteTitle: 'Spidey',
     siteHandle: '@Spidey',
@@ -22,16 +29,51 @@ export default function App() {
   const [toasts, setToasts] = useState([]);
 
   useEffect(() => {
-    (async () => {
+    const loadData = async () => {
       try {
         const r = await fetchScriptsFromFirebase();
-        if (r?.scripts) setScripts(r.scripts);
+        if (r && Array.isArray(r.scripts)) {
+          setScripts(r.scripts);
+        }
       } catch (_) {}
       try {
         const s = await fetchSettingsFromFirebase();
         if (s) setSettings(s);
       } catch (_) {}
-    })();
+    };
+
+    loadData();
+
+    // Re-check when window regains focus (switching back from Admin tab)
+    const onFocus = () => loadData();
+    window.addEventListener('focus', onFocus);
+
+    // Cross-tab storage sync
+    const onStorage = (e) => {
+      if (e.key === 'spidey_scripts_cache' && e.newValue !== null) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) setScripts(parsed);
+        } catch (_) {}
+      }
+      if (e.key === 'spidey_channel_ping') {
+        loadData();
+      }
+    };
+    window.addEventListener('storage', onStorage);
+
+    // Real-time broadcast channel
+    let bc = null;
+    try {
+      bc = new BroadcastChannel('spidey_hub_channel');
+      bc.onmessage = () => loadData();
+    } catch (_) {}
+
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      window.removeEventListener('storage', onStorage);
+      if (bc) bc.close();
+    };
   }, []);
 
   const toast = (msg) => {
