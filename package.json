@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Spidey - Next-Gen Roblox Script Hub with SQLite Database & Admin Console",
-  "main": "server.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
