@@ -562,7 +562,7 @@ const DEFAULT_SITE_CONFIG = {
     siteTitle: 'Spidey',
     siteHandle: '@Spidey',
     logoUrl: '',
-    announcementLabel: '📢 ประกาศ:',
+    announcementLabel: 'ประกาศ:',
     announcementText: 'อัปเดตสคริปต์ Steal An Egg และ Blox Fruits ตัวล่าสุดแล้ววันนี้!',
     discordUrl: 'https://discord.gg',
     youtubeUrl: 'https://youtube.com',

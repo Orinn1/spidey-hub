@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Copy, Check, ExternalLink, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { X, Copy, Check, ExternalLink, ShieldCheck, CheckCircle2, Lock, Info, Sparkles } from 'lucide-react';
 
 const FALLBACK_IMG = "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&auto=format&fit=crop&q=60";
 
@@ -135,14 +135,17 @@ export default function ScriptModal({ script, settings = {}, onClose, onCopy }) 
             <div className="s2u-box">
               {settings.redInstructionText && (
                 <div className="s2u-instruction">
-                  <span>📢</span> {settings.redInstructionText}
+                  <Info size={15} style={{ flexShrink: 0, color: '#f87171' }} />
+                  <span>{settings.redInstructionText}</span>
                 </div>
               )}
 
               {settings.lootlabsEnabled && settings.lootlabsTier1Url ? (
                 /* LootLabs Monetization Gate Mode */
                 <div className="s2u-gate-section">
-                  <div className="s2u-icon">💎</div>
+                  <div className="s2u-icon" style={{ display: 'flex', justifyContent: 'center', marginBottom: '8px', color: '#60a5fa' }}>
+                    <Sparkles size={24} />
+                  </div>
                   <div className="s2u-title">ปลดล็อคผ่านลิงก์สปอนเซอร์ (LootLabs)</div>
                   <p className="s2u-desc">กดปุ่มด้านล่างเพื่อผ่านระบบลิงก์สปอนเซอร์ แล้วกลับมารับโค้ดสคริปต์ได้ทันที</p>
 
@@ -152,7 +155,7 @@ export default function ScriptModal({ script, settings = {}, onClose, onCopy }) 
                     disabled={lootlabsWaiting}
                   >
                     {lootlabsWaiting ? (
-                      <>⏳ กำลังตรวจสอบการปลดล็อค... ({lootlabsCount}s)</>
+                      <><span className="gate-spinner"></span> กำลังตรวจสอบการปลดล็อค... ({lootlabsCount}s)</>
                     ) : (
                       <>
                         <ExternalLink size={16} />
@@ -166,7 +169,7 @@ export default function ScriptModal({ script, settings = {}, onClose, onCopy }) 
                 <div className="s2u-gate-section">
                   <div className="s2u-head-wrap">
                     <div className="s2u-head-badge">
-                      <span className="s2u-lock-pulse">🔒</span>
+                      <Lock size={15} style={{ color: '#22c55e' }} />
                       <span>ภารกิจปลดล็อคสคริปต์ (Sub2Unlock)</span>
                     </div>
                     <p className="s2u-desc">ทำภารกิจด้านล่างให้ครบเพื่อรับโค้ดสคริปต์ฟรี</p>
@@ -256,7 +259,7 @@ export default function ScriptModal({ script, settings = {}, onClose, onCopy }) 
                     onClick={handleCompleteUnlock}
                     title="ปุ่มข้ามสำหรับแอดมินทดสอบ (เปิดใช้งานจากหลังบ้าน)"
                   >
-                    ⚡ ข้ามภารกิจ (โหมดแอดมิน)
+                    ข้ามภารกิจ (โหมดแอดมิน)
                   </button>
                 </div>
               )}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Megaphone } from 'lucide-react';
 import Navbar from './components/Header';
 import FilterTabs from './components/FilterTabs';
 import ScriptCard from './components/ScriptCard';
@@ -129,7 +130,8 @@ export default function App() {
 
       {settings.announcementText && (
         <div className="notice-bar">
-          <span>📢</span> {settings.announcementText}
+          <Megaphone size={14} style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px', flexShrink: 0 }} />
+          <span>{settings.announcementText}</span>
         </div>
       )}
 

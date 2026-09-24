@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldAlert, Lock, ExternalLink, PlayCircle, ChevronDown, Info, CheckCircle2 } from 'lucide-react';
+import { ShieldAlert, Lock, ExternalLink, PlayCircle, ChevronDown, Info, CheckCircle2, RotateCw } from 'lucide-react';
 
 function getYouTubeEmbedUrl(url) {
   if (!url) return 'https://www.youtube-nocookie.com/embed/FdXsvivWhOw?autoplay=1&rel=0';
@@ -256,7 +256,8 @@ export default function SecurityGateModal({ settings = {}, onUnlock }) {
               className="btn-gate-verify"
               onClick={handleCheckStatus}
             >
-              🔄 กดเพื่อตรวจสอบสถานะอีกครั้ง
+              <RotateCw size={13} style={{ flexShrink: 0 }} />
+              <span>กดเพื่อตรวจสอบสถานะอีกครั้ง</span>
             </button>
             {checkFeedback && <div className="gate-feedback-msg">{checkFeedback}</div>}
           </div>
