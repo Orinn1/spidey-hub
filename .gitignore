@@ -4,3 +4,4 @@ node_modules/
 data/database.sqlite-journal
 data/database.sqlite-shm
 data/database.sqlite-wal
+dist/
