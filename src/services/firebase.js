@@ -20,8 +20,8 @@ export async function fetchScriptsFromFirebase() {
 
   // 2. Fetch fresh data from Firestore REST API
   try {
-    const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_CONFIG.projectId}/databases/(default)/documents/hub/database?key=${FIREBASE_CONFIG.apiKey}&_t=${Date.now()}`;
-    const res = await fetch(url, { cache: 'no-cache' });
+    const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_CONFIG.projectId}/databases/(default)/documents/hub/database?key=${FIREBASE_CONFIG.apiKey}`;
+    const res = await fetch(url, { cache: 'no-store' });
     if (res.ok) {
       const data = await res.json();
       if (data.fields && data.fields.scriptsJson && typeof data.fields.scriptsJson.stringValue === 'string') {
@@ -46,8 +46,8 @@ export async function fetchScriptsFromFirebase() {
 
 export async function fetchSettingsFromFirebase() {
   try {
-    const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_CONFIG.projectId}/databases/(default)/documents/hub/database?key=${FIREBASE_CONFIG.apiKey}&_t=${Date.now()}`;
-    const res = await fetch(url, { cache: 'no-cache' });
+    const url = `https://firestore.googleapis.com/v1/projects/${FIREBASE_CONFIG.projectId}/databases/(default)/documents/hub/database?key=${FIREBASE_CONFIG.apiKey}`;
+    const res = await fetch(url, { cache: 'no-store' });
     if (res.ok) {
       const data = await res.json();
       if (data.fields && data.fields.settingsJson && data.fields.settingsJson.stringValue) {
