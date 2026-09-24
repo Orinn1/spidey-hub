@@ -406,6 +406,67 @@ a {
   margin-bottom: 20px;
 }
 
+/* Missions Step Cards */
+.missions-step-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.mission-step-card {
+  background: var(--surface-2);
+  border: 1px solid #26292e;
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  transition: border-color 0.2s;
+}
+
+.mission-step-card:hover {
+  border-color: #383d47;
+}
+
+.mission-step-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.mission-step-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  font-size: 11.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mission-step-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.mission-step-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 14px;
+}
+
+@media (max-width: 768px) {
+  .mission-step-inputs {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
 .form-group {
   display: flex;
   flex-direction: column;
