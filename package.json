@@ -1,0 +1,20 @@
+{
+  "name": "spidey-scripthub",
+  "version": "1.0.0",
+  "description": "Spidey - Next-Gen Roblox Script Hub with SQLite Database & Admin Console",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "keywords": [
+    "roblox",
+    "scripts",
+    "spidey",
+    "hub"
+  ],
+  "author": "Spidey",
+  "license": "ISC"
+}

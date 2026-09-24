@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spidey — แผงควบคุมระบบ (Admin Console)</title>
+
+    <!-- Google Fonts: Noto Sans Thai & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+    <!-- ===================================================================
+         Header (64px, Software UI)
+         =================================================================== -->
+    <header class="app-header">
+        <div class="app-container header-inner">
+            <div class="brand-wrap">
+                <span class="brand-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                </span>
+                <span class="brand-text">Spidey</span>
+                <span class="brand-badge">ระบบจัดการหลังบ้าน</span>
+            </div>
+
+            <div class="header-actions">
+                <a href="index.html" class="btn btn-secondary btn-md">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    ดูหน้าเว็บ
+                </a>
+                <button type="button" class="btn btn-primary btn-md" id="btnHeaderNewScript">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    + เพิ่มสคริปต์ใหม่
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-container" style="padding-top: 24px; padding-bottom: 60px;">
+
+        <!-- ===============================================================
+             KPI Overview Cards
+             =============================================================== -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <span class="kpi-label">สคริปต์ทั้งหมด</span>
+                <span class="kpi-value" id="statScriptsCount">0</span>
+                <span class="kpi-caption">สคริปต์ที่เผยแพร่แล้ว</span>
+            </div>
+            <div class="kpi-card">
+                <span class="kpi-label">ยอดการเข้าชม</span>
+                <span class="kpi-value" id="statViewsCount">0</span>
+                <span class="kpi-caption">จำนวนการเปิดใช้งานสคริปต์</span>
+            </div>
+            <div class="kpi-card">
+                <span class="kpi-label">ยอดกดถูกใจ</span>
+                <span class="kpi-value" id="statLikesCount">0</span>
+                <span class="kpi-caption">การโหวตจากผู้ใช้งาน</span>
+            </div>
+            <div class="kpi-card">
+                <span class="kpi-label">IP ที่ถูกระงับ</span>
+                <span class="kpi-value" id="statBannedCount">0</span>
+                <span class="kpi-caption">ไอพีที่ถูกจำกัดการเข้าถึง</span>
+            </div>
+        </div>
+
+        <!-- ===============================================================
+             Navigation (Compact Tabs)
+             =============================================================== -->
+        <div class="nav-wrap">
+            <div class="nav-tabs">
+                <button type="button" class="nav-tab-btn active" data-tab="tabScripts">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    สคริปต์
+                </button>
+                <button type="button" class="nav-tab-btn" data-tab="tabConfig">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                    ตั้งค่าเว็บไซต์
+                </button>
+                <button type="button" class="nav-tab-btn" data-tab="tabMissions">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    ระบบล็อคลิ้งก์
+                </button>
+                <button type="button" class="nav-tab-btn" data-tab="tabFaqs">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    คำถามที่พบบ่อย
+                </button>
+                <button type="button" class="nav-tab-btn" data-tab="tabSecurity">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    ความปลอดภัย
+                </button>
+                <button type="button" class="nav-tab-btn" data-tab="tabDatabase">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                    ฐานข้อมูล
+                </button>
+            </div>
+        </div>
+
+        <!-- ===============================================================
+             TAB 1: จัดการสคริปต์
+             =============================================================== -->
+        <div class="tab-pane" id="tabScripts">
+            <div class="card-panel">
+                <div class="card-panel-header">
+                    <div class="card-panel-title">
+                        <span>คลังสคริปต์ทั้งหมด</span>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button type="button" class="btn btn-danger btn-sm" id="btnBatchDelete" style="display: none;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            ลบที่เลือก (<span id="selectedCount">0</span>)
+                        </button>
+
+                        <div class="search-input-wrap">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <input type="text" id="adminSearchInput" placeholder="ค้นหาสคริปต์, ชื่อเกม...">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="console-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 32px;"><input type="checkbox" id="checkAll"></th>
+                                <th>สคริปต์</th>
+                                <th>หมวดหมู่เกม</th>
+                                <th>สถานะ</th>
+                                <th>ยอดเข้าชม</th>
+                                <th style="width: 100px; text-align: right;">จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scriptsTableBody">
+                            <tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">กำลังโหลดสคริปต์...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===============================================================
+             TAB 2: ตั้งค่าเว็บไซต์
+             =============================================================== -->
+        <div class="tab-pane" id="tabConfig" style="display: none;">
+            <div class="card-panel">
+                <div class="card-panel-header">
+                    <div class="card-panel-title">
+                        <span>ตั้งค่าเว็บไซต์และการแสดงผล</span>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-md" id="btnSaveConfigTop">
+                        บันทึกการตั้งค่า
+                    </button>
+                </div>
+
+                <form id="siteConfigForm">
+                    <!-- Section: ข้อมูลแบรนด์และชื่อเว็บ -->
+                    <div class="form-section-title">ข้อมูลแบรนด์และชื่อเว็บ (Branding)</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>ชื่อเว็บไซต์ *</label>
+                            <input type="text" class="form-control" id="cfgSiteTitle" required>
+                            <span class="form-hint">ชื่อหลักที่แสดงบนแถบ Title และหัวเว็บ</span>
+                        </div>
+                        <div class="form-group">
+                            <label>นามแฝง (Handle)</label>
+                            <input type="text" class="form-control" id="cfgSiteHandle">
+                            <span class="form-hint">เช่น @Spidey</span>
+                        </div>
+                        <div class="form-group">
+                            <label>ลิงก์รูปภาพโลโก้ (Logo URL)</label>
+                            <input type="text" class="form-control" id="cfgLogoUrl">
+                        </div>
+                    </div>
+
+                    <!-- Section: แถบประกาศ -->
+                    <div class="form-section-title">แถบประกาศและช่องทางติดตาม (Announcement Bar)</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>ข้อความป้ายกำกับ</label>
+                            <input type="text" class="form-control" id="cfgAnnouncementLabel">
+                            <span class="form-hint">เช่น ติดตาม: หรือ อัปเดตล่าสุด:</span>
+                        </div>
+                        <div class="form-group">
+                            <label>ข้อความประกาศ</label>
+                            <input type="text" class="form-control" id="cfgAnnouncementText">
+                        </div>
+                        <div class="form-group">
+                            <label>ลิงก์ Discord</label>
+                            <input type="url" class="form-control" id="cfgDiscordUrl">
+                        </div>
+                        <div class="form-group">
+                            <label>ลิงก์ YouTube Channel</label>
+                            <input type="url" class="form-control" id="cfgYoutubeUrl">
+                        </div>
+                    </div>
+
+                    <!-- Section: หน้ารายละเอียดสคริปต์ -->
+                    <div class="form-section-title">การแสดงผลหน้ารายละเอียดสคริปต์ (Detail View)</div>
+                    <div class="form-grid">
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>ข้อความคำแนะนำก่อนปลดล็อค</label>
+                            <input type="text" class="form-control" id="cfgRedInstruction">
+                            <span class="form-hint">ข้อความแนะนำที่แสดงอยู่เหนือกล่องปลดล็อคสคริปต์</span>
+                        </div>
+                        <div class="form-group">
+                            <label>ลิงก์ภาพตัวอย่างคลิปวิดีโอ (Video Preview Image)</label>
+                            <input type="url" class="form-control" id="cfgVideoPreview">
+                        </div>
+                        <div class="form-group">
+                            <label>ลิงก์คลิปวิดีโอตัวอย่าง (Video URL)</label>
+                            <input type="url" class="form-control" id="cfgVideoUrl">
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 32px; display: flex; justify-content: flex-end;">
+                        <button type="submit" class="btn btn-primary btn-md">
+                            บันทึกการตั้งค่า
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ===============================================================
+             TAB 3: ระบบล็อคลิ้งก์ & ภารกิจ Sub2Unlock
+             =============================================================== -->
+        <div class="tab-pane" id="tabMissions" style="display: none;">
+            <div class="card-panel">
+                <div class="card-panel-header">
+                    <div class="card-panel-title">
+                        <span>ระบบล็อคลิ้งก์และเกตภารกิจ (Sub2Unlock Gate)</span>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-md" id="btnSaveMissionsTop">
+                        บันทึกการตั้งค่า
+                    </button>
+                </div>
+
+                <form id="missionsConfigForm">
+                    <div class="form-section-title">การควบคุมการเข้าถึงทั่วไป (Access Control)</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>สถานะการล็อคสคริปต์</label>
+                            <select class="form-control" id="cfgLockEnabled">
+                                <option value="true">ล็อค (ต้องทำภารกิจ Sub2Unlock เพื่อรับโค้ดสคริปต์)</option>
+                                <option value="false">ปลดล็อค (เปิดให้คัดลอกสคริปต์ได้ทันที)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>ปุ่มข้ามภารกิจด่วน (Quick Bypass Button)</label>
+                            <select class="form-control" id="cfgQuickBypassEnabled">
+                                <option value="true">เปิดใช้งาน (แสดงปุ่มข้ามสำหรับแอดมินทดสอบ)</option>
+                                <option value="false">ปิดใช้งาน (ผู้ใช้ต้องทำภารกิจครบเท่านั้น)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-section-title">ภารกิจปลดล็อค 3 ขั้นตอน (3-Step Missions)</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>ชื่อปุ่มภารกิจที่ 1</label>
+                            <input type="text" class="form-control" id="cfgMission1Label">
+                        </div>
+                        <div class="form-group">
+                            <label>ลิงก์ปลายทางภารกิจที่ 1</label>
+                            <input type="url" class="form-control" id="cfgMission1Url">
+                        </div>
+
+                        <div class="form-group">
+                            <label>ชื่อปุ่มภารกิจที่ 2</label>
+                            <input type="text" class="form-control" id="cfgMission2Label">
+                        </div>
+                        <div class="form-group">
+                            <label>ลิงก์ปลายทางภารกิจที่ 2</label>
+                            <input type="url" class="form-control" id="cfgMission2Url">
+                        </div>
+
+                        <div class="form-group">
+                            <label>ชื่อปุ่มภารกิจที่ 3</label>
+                            <input type="text" class="form-control" id="cfgMission3Label">
+                        </div>
+                        <div class="form-group">
+                            <label>ลิงก์ปลายทางภารกิจที่ 3</label>
+                            <input type="url" class="form-control" id="cfgMission3Url">
+                        </div>
+                    </div>
+
+                    <div class="form-section-title">ระบบสร้างรายได้ LootLabs Gate</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>สถานะเกต LootLabs</label>
+                            <select class="form-control" id="cfgLootlabsEnabled">
+                                <option value="false">ปิดใช้งาน (ใช้ภารกิจ 3 สเต็ปด้านบน)</option>
+                                <option value="true">เปิดใช้งาน (ส่งผู้ใช้ไปยัง LootLabs เพื่อปลดล็อค)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>ลิงก์ย่อ LootLabs (Shortlink URL)</label>
+                            <input type="url" class="form-control" id="cfgLootlabsUrl" placeholder="https://loot-link.com/s?...">
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 32px; display: flex; justify-content: flex-end;">
+                        <button type="submit" class="btn btn-primary btn-md">
+                            บันทึกการตั้งค่า
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ===============================================================
+             TAB 4: คำถามที่พบบ่อย (FAQ Manager)
+             =============================================================== -->
+        <div class="tab-pane" id="tabFaqs" style="display: none;">
+            <div class="card-panel">
+                <div class="card-panel-header">
+                    <div class="card-panel-title">
+                        <span>คำถามที่พบบ่อย (FAQs)</span>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-md" id="btnAddFaqBtn">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        + เพิ่มคำถาม
+                    </button>
+                </div>
+
+                <div id="faqListContainer" style="display: flex; flex-direction: column; gap: 10px;">
+                    <!-- แสดงผลผ่าน JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ===============================================================
+             TAB 5: ความปลอดภัยและการระงับไอพี (Security & Banned IPs)
+             =============================================================== -->
+        <div class="tab-pane" id="tabSecurity" style="display: none;">
+            <div class="card-panel">
+                <div class="card-panel-header">
+                    <div class="card-panel-title">
+                        <span>ความปลอดภัยและการระงับไอพี (Security & IP Restriction)</span>
+                    </div>
+                </div>
+
+                <form id="banForm" style="margin-bottom: 32px;">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>ที่อยู่ IP *</label>
+                            <input type="text" class="form-control" id="banIpInput" placeholder="เช่น 192.168.1.100" required>
+                        </div>
+                        <div class="form-group">
+                            <label>ระยะเวลาการระงับ</label>
+                            <select class="form-control" id="banDurationSelect">
+                                <option value="24">24 ชั่วโมง</option>
+                                <option value="72">72 ชั่วโมง (3 วัน)</option>
+                                <option value="168">7 วัน (1 สัปดาห์)</option>
+                                <option value="720">30 วัน (1 เดือน)</option>
+                                <option value="0">ถาวร</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>สาเหตุการระงับ</label>
+                            <input type="text" class="form-control" id="banReasonInput" placeholder="เช่น พยายาม Bypass, พฤติกรรมต้องสงสัย">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-danger btn-md">
+                        ระงับ IP นี้
+                    </button>
+                </form>
+
+                <div class="form-section-title" style="margin-top: 0;">ประวัติ IP ที่ถูกระงับการเข้าถึง</div>
+                <div class="table-wrap">
+                    <table class="console-table">
+                        <thead>
+                            <tr>
+                                <th>ที่อยู่ IP</th>
+                                <th>เวลาที่ระงับ</th>
+                                <th>วันหมดอายุ</th>
+                                <th>สาเหตุ</th>
+                                <th style="text-align: right;">จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bannedIpsTableBody">
+                            <tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">ไม่มีรายการไอพีที่ถูกระงับ</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===============================================================
+             TAB 6: ฐานข้อมูลและการสำรองข้อมูล (Database & Danger Zone)
+             =============================================================== -->
+        <div class="tab-pane" id="tabDatabase" style="display: none;">
+            <div class="card-panel">
+                <div class="card-panel-header">
+                    <div class="card-panel-title">
+                        <span>เครื่องมือจัดการฐานข้อมูลและการสำรองข้อมูล</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <a href="/api/db/backup" download="spidey_backup.json" class="btn btn-secondary btn-md">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        สำรองข้อมูลฐานข้อมูล (JSON)
+                    </a>
+                    
+                    <label class="btn btn-secondary btn-md" style="cursor: pointer;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        กู้คืนข้อมูลจากไฟล์ (Restore)
+                        <input type="file" id="restoreFileInput" accept=".json" style="display: none;">
+                    </label>
+                </div>
+
+                <!-- Danger Zone (Strictly Styled per Spec) -->
+                <div class="danger-panel">
+                    <div class="danger-panel-title">โซนอันตราย (Danger Zone)</div>
+                    <div class="danger-panel-desc">การกระทำในส่วนนี้ไม่สามารถย้อนกลับได้ โปรดดาวน์โหลดไฟล์สำรองข้อมูลก่อนดำเนินการเสมอ</div>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button type="button" class="btn btn-danger btn-md" id="btnResetDefault">
+                            รีเซ็ตเป็นค่าเริ่มต้น
+                        </button>
+                        <button type="button" class="btn btn-danger btn-md" id="btnClearAll">
+                            ลบข้อมูลทั้งหมด
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===================================================================
+         MODAL: เพิ่ม / แก้ไขสคริปต์ (10px Radius, Software Dialog)
+         =================================================================== -->
+    <div id="scriptModal" class="modal-overlay" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 id="scriptModalTitle">เพิ่มสคริปต์ใหม่</h3>
+                <button type="button" class="btn btn-ghost btn-sm" id="closeScriptModalBtn" style="padding: 0 6px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+
+            <!-- Auto Fetch Roblox Bar -->
+            <div style="padding: 14px 22px; background: var(--surface-2); border-bottom: 1px solid var(--border-subtle); display: flex; gap: 10px; align-items: center;">
+                <span style="font-size: 12px; font-weight: 500; color: var(--text-muted); white-space: nowrap;">ดึงข้อมูล Roblox:</span>
+                <input type="text" class="form-control" id="robloxPlaceInput" placeholder="ใส่ Place ID หรือลิงก์เกม Roblox..." style="height: 32px; font-size: 12.5px;">
+                <button type="button" class="btn btn-secondary btn-sm" id="btnFetchRoblox">
+                    ดึงข้อมูล
+                </button>
+            </div>
+
+            <form id="scriptForm">
+                <div class="modal-body">
+                    <input type="hidden" id="formScriptId">
+
+                    <div class="form-grid">
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>ชื่อสคริปต์ *</label>
+                            <input type="text" class="form-control" id="formTitle" placeholder="เช่น Steal An Egg – Chilli HUB" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>หมวดหมู่เกม *</label>
+                            <input type="text" class="form-control" id="formGame" placeholder="เช่น Blox Fruits, Steal An Egg, Universal" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>แท็ก (คั่นด้วยจุลภาค)</label>
+                            <input type="text" class="form-control" id="formTags" placeholder="All-Script, Dr Scrambles">
+                        </div>
+
+                        <div class="form-group">
+                            <label>ลิงก์รูปภาพปก (Thumbnail URL)</label>
+                            <input type="url" class="form-control" id="formThumb" placeholder="https://...">
+                        </div>
+
+                        <div class="form-group">
+                            <label>ลิงก์ภาพตัวอย่างคลิป (Showcase URL)</label>
+                            <input type="url" class="form-control" id="formVideo" placeholder="https://...">
+                        </div>
+
+                        <div class="form-group">
+                            <label>ยอดเข้าชมเริ่มต้น (Views)</label>
+                            <input type="number" class="form-control" id="formViews" value="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label>ยอดถูกใจเริ่มต้น (Likes)</label>
+                            <input type="number" class="form-control" id="formLikes" value="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 18px;">
+                        <label>โค้ดสคริปต์ (Loadstring Code) *</label>
+                        <textarea class="form-control form-control-code" id="formLoadstring" rows="4" placeholder='loadstring(game:HttpGet("https://..."))()' required></textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 20px; padding: 12px 14px; background: var(--surface-2); border: 1px solid var(--border-subtle); border-radius: var(--radius-md);">
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-primary); cursor: pointer;">
+                            <input type="checkbox" id="formIsKeyless" checked> Keyless (ไม่มีคีย์ / ปลดล็อคฟรี)
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-primary); cursor: pointer;">
+                            <input type="checkbox" id="formIsExecutor"> Executor (โปรแกรมรันสคริปต์)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost btn-md" id="cancelScriptModalBtn">ยกเลิก</button>
+                    <button type="submit" class="btn btn-primary btn-md" id="saveScriptSubmitBtn">บันทึกสคริปต์</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- กล่องแจ้งเตือน (Toast Notification) -->
+    <div id="adminToast" class="admin-toast">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        <span id="toastMessage">บันทึกการเปลี่ยนแปลงสำเร็จ</span>
+    </div>
+
+    <script src="firebase-config.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
