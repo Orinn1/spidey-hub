@@ -67,6 +67,16 @@ const formGame = document.getElementById('formGame');
 const formTags = document.getElementById('formTags');
 const formThumb = document.getElementById('formThumb');
 const formVideo = document.getElementById('formVideo');
+const thumbFileInput = document.getElementById('thumbFileInput');
+const videoFileInput = document.getElementById('videoFileInput');
+const thumbPreviewWrap = document.getElementById('thumbPreviewWrap');
+const thumbPreviewImg = document.getElementById('thumbPreviewImg');
+const thumbFileName = document.getElementById('thumbFileName');
+const btnRemoveThumb = document.getElementById('btnRemoveThumb');
+const videoPreviewWrap = document.getElementById('videoPreviewWrap');
+const videoPreviewImg = document.getElementById('videoPreviewImg');
+const videoFileName = document.getElementById('videoFileName');
+const btnRemoveVideo = document.getElementById('btnRemoveVideo');
 const formViews = document.getElementById('formViews');
 const formLikes = document.getElementById('formLikes');
 const formLoadstring = document.getElementById('formLoadstring');
@@ -261,6 +271,139 @@ if (btnBatchDelete) {
 // 3. Script Modal (Add & Edit Any Field!)
 // =============================================================================
 
+// Image Compressor & Helper
+function compressImageFile(file, maxWidth = 800, maxHeight = 600, quality = 0.82) {
+    return new Promise((resolve, reject) => {
+        if (!file || !file.type.startsWith('image/')) {
+            return reject(new Error('กรุณาเลือกไฟล์รูปภาพเท่านั้น'));
+        }
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = () => {
+                let width = img.width;
+                let height = img.height;
+                if (width > maxWidth || height > maxHeight) {
+                    const ratio = Math.min(maxWidth / width, maxHeight / height);
+                    width = Math.round(width * ratio);
+                    height = Math.round(height * ratio);
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                try {
+                    const webp = canvas.toDataURL('image/webp', quality);
+                    if (webp.startsWith('data:image/webp')) {
+                        return resolve(webp);
+                    }
+                } catch (_) {}
+                resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+            img.onerror = () => reject(new Error('ไม่สามารถประมวลผลรูปภาพได้'));
+        };
+        reader.onerror = () => reject(new Error('ไม่สามารถอ่านไฟล์ได้'));
+    });
+}
+
+function setThumbPreview(src, name = 'รูปภาพ') {
+    if (!thumbPreviewWrap || !thumbPreviewImg) return;
+    if (src) {
+        thumbPreviewImg.src = src;
+        if (thumbFileName) thumbFileName.textContent = name;
+        thumbPreviewWrap.style.display = 'flex';
+    } else {
+        thumbPreviewWrap.style.display = 'none';
+        thumbPreviewImg.src = '';
+    }
+}
+
+function setVideoPreview(src, name = 'รูปภาพ') {
+    if (!videoPreviewWrap || !videoPreviewImg) return;
+    if (src) {
+        videoPreviewImg.src = src;
+        if (videoFileName) videoFileName.textContent = name;
+        videoPreviewWrap.style.display = 'flex';
+    } else {
+        videoPreviewWrap.style.display = 'none';
+        videoPreviewImg.src = '';
+    }
+}
+
+if (thumbFileInput) {
+    thumbFileInput.addEventListener('change', async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        try {
+            showToast('กำลังประมวลผลรูปภาพ...');
+            const dataUrl = await compressImageFile(file);
+            formThumb.value = dataUrl;
+            setThumbPreview(dataUrl, file.name || 'รูปจากเครื่อง');
+            showToast('เลือกรูปภาพสำเร็จ');
+        } catch (err) {
+            alert(err.message);
+        }
+    });
+}
+
+if (videoFileInput) {
+    videoFileInput.addEventListener('change', async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        try {
+            showToast('กำลังประมวลผลรูปภาพ...');
+            const dataUrl = await compressImageFile(file);
+            formVideo.value = dataUrl;
+            setVideoPreview(dataUrl, file.name || 'รูปจากเครื่อง');
+            showToast('เลือกรูปภาพสำเร็จ');
+        } catch (err) {
+            alert(err.message);
+        }
+    });
+}
+
+if (formThumb) {
+    formThumb.addEventListener('input', () => {
+        const val = formThumb.value.trim();
+        if (val) {
+            setThumbPreview(val, val.startsWith('data:') ? 'รูปจากเครื่อง' : 'รูปตามลิงก์');
+        } else {
+            setThumbPreview('');
+        }
+    });
+}
+
+if (formVideo) {
+    formVideo.addEventListener('input', () => {
+        const val = formVideo.value.trim();
+        if (val) {
+            setVideoPreview(val, val.startsWith('data:') ? 'รูปจากเครื่อง' : 'รูปตามลิงก์');
+        } else {
+            setVideoPreview('');
+        }
+    });
+}
+
+if (btnRemoveThumb) {
+    btnRemoveThumb.addEventListener('click', () => {
+        formThumb.value = '';
+        if (thumbFileInput) thumbFileInput.value = '';
+        setThumbPreview('');
+    });
+}
+
+if (btnRemoveVideo) {
+    btnRemoveVideo.addEventListener('click', () => {
+        formVideo.value = '';
+        if (videoFileInput) videoFileInput.value = '';
+        setVideoPreview('');
+    });
+}
+
 function openAddScriptModal() {
     scriptForm.reset();
     formScriptId.value = '';
@@ -269,6 +412,10 @@ function openAddScriptModal() {
     formIsExecutor.checked = false;
     formViews.value = 0;
     formLikes.value = 0;
+    if (thumbFileInput) thumbFileInput.value = '';
+    if (videoFileInput) videoFileInput.value = '';
+    setThumbPreview('');
+    setVideoPreview('');
     scriptModal.style.display = 'flex';
 }
 
@@ -277,7 +424,7 @@ window.openEditScriptModal = function(id) {
     if (!s) return;
 
     formScriptId.value = s.id;
-    scriptModalTitle.textContent = `แก้ไขสคริปต์: ${s.title}`;
+    scriptModalTitle.textContent = `แก้ไขสคริปต์: ${s.title || 'ไม่มีชื่อ'}`;
     formTitle.value = s.title || '';
     formGame.value = s.game || '';
     formTags.value = Array.isArray(s.tags) ? s.tags.join(', ') : (s.tags || '');
@@ -288,6 +435,11 @@ window.openEditScriptModal = function(id) {
     formLoadstring.value = s.loadstring || '';
     formIsKeyless.checked = Boolean(s.isKeyless);
     formIsExecutor.checked = Boolean(s.isExecutor);
+
+    if (thumbFileInput) thumbFileInput.value = '';
+    if (videoFileInput) videoFileInput.value = '';
+    setThumbPreview(s.thumbnail || '', s.thumbnail?.startsWith('data:') ? 'รูปจากเครื่อง' : 'รูปตามลิงก์');
+    setVideoPreview(s.videoPreview || '', s.videoPreview?.startsWith('data:') ? 'รูปจากเครื่อง' : 'รูปตามลิงก์');
 
     scriptModal.style.display = 'flex';
 };
@@ -309,7 +461,7 @@ if (btnHeaderNewScript) btnHeaderNewScript.addEventListener('click', openAddScri
 if (closeScriptModalBtn) closeScriptModalBtn.addEventListener('click', () => scriptModal.style.display = 'none');
 if (cancelScriptModalBtn) cancelScriptModalBtn.addEventListener('click', () => scriptModal.style.display = 'none');
 
-// Save Script Submit
+// Save Script Submit (ปล่อยว่างได้ทุกอัน)
 scriptForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const isEdit = Boolean(formScriptId.value);
@@ -319,9 +471,9 @@ scriptForm.addEventListener('submit', async (e) => {
     const dateStr = `${thaiMonths[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
 
     const payload = {
-        title: formTitle.value.trim(),
-        game: formGame.value.trim(),
-        tags: formTags.value.split(',').map(t => t.trim()).filter(Boolean),
+        title: formTitle.value.trim() || 'Untitled Script',
+        game: formGame.value.trim() || 'Universal',
+        tags: formTags.value ? formTags.value.split(',').map(t => t.trim()).filter(Boolean) : [],
         thumbnail: formThumb.value.trim(),
         videoPreview: formVideo.value.trim() || formThumb.value.trim(),
         loadstring: formLoadstring.value.trim(),
