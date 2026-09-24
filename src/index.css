@@ -502,27 +502,164 @@ img { display: block; max-width: 100%; }
 .s2u-desc {
   font-size: 0.84rem;
   color: #888;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
-.s2u-btn {
+.s2u-instruction {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  margin-bottom: 16px;
+  text-align: left;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.s2u-missions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.s2u-mission-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #161616;
+  border: 1px solid #282828;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.s2u-mission-item.done {
+  border-color: rgba(34, 197, 94, 0.35);
+  background: rgba(34, 197, 94, 0.05);
+}
+
+.s2u-mission-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.s2u-mission-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #2a2a2a;
+  color: #aaa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.s2u-mission-item.done .s2u-mission-num {
+  background: #22c55e;
+  color: #000;
+}
+
+.s2u-mission-label {
+  font-size: 0.88rem;
+  color: #ddd;
+  font-weight: 500;
+}
+
+.s2u-mission-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #2a2a2a;
+  color: #fff;
+  border: 1px solid #3a3a3a;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.s2u-mission-action-btn:hover:not(:disabled) {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #fff;
+}
+
+.s2u-mission-action-btn.btn-done {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.4);
+  color: #4ade80;
+  cursor: default;
+}
+
+.s2u-unlock-now-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #000;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+  70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+.s2u-progress-hint {
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.s2u-bypass-btn {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 0.75rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 4px 8px;
+}
+
+.s2u-bypass-btn:hover {
+  color: #aaa;
+}
+
+.s2u-lootlabs-btn {
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #ef4444;
-  color: #fff;
-  border: none;
-  padding: 10px 22px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 600;
 }
 
-.s2u-btn:hover { opacity: 0.9; }
-
-.s2u-btn:disabled {
-  opacity: 0.6;
-  cursor: wait;
+.s2u-lootlabs-btn:hover {
+  opacity: 0.9;
 }
 
 /* code box */

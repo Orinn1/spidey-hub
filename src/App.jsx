@@ -146,7 +146,12 @@ export default function App() {
       </main>
 
       {selected && (
-        <ScriptModal script={selected} onClose={() => setSelected(null)} onCopy={toast} />
+        <ScriptModal
+          script={selected}
+          settings={settings}
+          onClose={() => setSelected(null)}
+          onCopy={toast}
+        />
       )}
 
       <Toast toasts={toasts} />
