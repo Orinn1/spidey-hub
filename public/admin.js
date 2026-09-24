@@ -25,11 +25,25 @@ async function fbRead() {
 
 async function fbWrite(data) {
     const fields = {};
-    if (data.scripts !== undefined) fields.scriptsJson = { stringValue: JSON.stringify(data.scripts) };
-    if (data.settings !== undefined) fields.settingsJson = { stringValue: JSON.stringify(data.settings) };
-    if (data.bannedIps !== undefined) fields.bannedIpsJson = { stringValue: JSON.stringify(data.bannedIps) };
+    const fieldPaths = [];
 
-    const res = await fetch(FB_DOC_URL, {
+    if (data.scripts !== undefined) {
+        fields.scriptsJson = { stringValue: JSON.stringify(data.scripts) };
+        fieldPaths.push('scriptsJson');
+    }
+    if (data.settings !== undefined) {
+        fields.settingsJson = { stringValue: JSON.stringify(data.settings) };
+        fieldPaths.push('settingsJson');
+    }
+    if (data.bannedIps !== undefined) {
+        fields.bannedIpsJson = { stringValue: JSON.stringify(data.bannedIps) };
+        fieldPaths.push('bannedIpsJson');
+    }
+
+    const queryParams = fieldPaths.map(p => `updateMask.fieldPaths=${encodeURIComponent(p)}`).join('&');
+    const url = `${FB_DOC_URL}${queryParams ? '&' + queryParams : ''}`;
+
+    const res = await fetch(url, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ fields })
@@ -543,14 +557,38 @@ if (btnFetchRoblox) {
     });
 }
 
-// =============================================================================
-// 4. Website Settings (Branding, Announcements, Detail View)
-// =============================================================================
+// Default Site Configuration
+const DEFAULT_SITE_CONFIG = {
+    siteTitle: 'Spidey',
+    siteHandle: '@Spidey',
+    logoUrl: '',
+    announcementLabel: '📢 ประกาศ:',
+    announcementText: 'อัปเดตสคริปต์ Steal An Egg และ Blox Fruits ตัวล่าสุดแล้ววันนี้!',
+    discordUrl: 'https://discord.gg',
+    youtubeUrl: 'https://youtube.com',
+    redInstructionText: 'กดปุ่มติดตามด้านล่างเพื่อปลดล็อคสคริปต์ฟรี',
+    videoShowcasePreview: 'https://i.postimg.cc/NjhnhRkJ/153b5a40-0a72-4b41-ab3d-a784d6cff6ec.png',
+    videoShowcaseUrl: 'https://youtube.com',
+    lockEnabled: true,
+    quickBypassEnabled: true,
+    mission1Label: 'กดติดตามช่อง YouTube',
+    mission1Url: 'https://youtube.com',
+    mission2Label: 'เข้าร่วม Discord Community',
+    mission2Url: 'https://discord.gg',
+    mission3Label: 'กดไลค์และคอมเมนต์คลิป',
+    mission3Url: 'https://youtube.com',
+    lootlabsEnabled: false,
+    lootlabsTier1Url: '',
+    faqs: [
+        { q: 'ใช้ตัวรัน (Executor) ตัวไหนดีที่สุด?', a: 'สำหรับ PC แนะนำ Wave หรือ Fluxus ส่วน Android/iOS แนะนำ Delta หรือ Codex ครับ' },
+        { q: 'สคริปต์โดนแบนไหม ปลอดภัยหรือเปล่า?', a: 'สคริปต์ใน Spidey Hub มีการทดสอบบายพาสก่อนลงเสมอ ปลอดภัย 100% ครับ' }
+    ]
+};
 
 async function loadConfig() {
     try {
         const data = await fbRead();
-        siteConfig = data.settings || {};
+        siteConfig = { ...DEFAULT_SITE_CONFIG, ...(data.settings || {}) };
 
         // Populate Tab 2
         const setVal = (id, key) => { const el = document.getElementById(id); if (el) el.value = siteConfig[key] || ''; };
