@@ -1,10 +1,42 @@
 /**
- * RocketscriptZ Design System v1.0
- * Admin Console Logic (simple-hub/admin.js) - ภาษาไทย
+ * Spidey Hub - Admin Console (Firebase Firestore Direct)
+ * ไม่ต้องใช้ Server API — อ่าน/เขียน Firestore โดยตรง
  */
 
 let allScripts = [];
 let siteConfig = {};
+
+// ---- Firestore Helpers ----
+const FB_PROJECT = window.FIREBASE_CONFIG?.projectId || 'rocketscriptz-hub';
+const FB_KEY = window.FIREBASE_CONFIG?.apiKey || 'AIzaSyBCZdUq2gEmz_Zhc7XAnY0oa9Uds3hk1lI';
+const FB_DOC_URL = `https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents/hub/database?key=${FB_KEY}`;
+
+async function fbRead() {
+    const res = await fetch(FB_DOC_URL);
+    if (!res.ok) throw new Error('Firestore read failed: ' + res.status);
+    const doc = await res.json();
+    const fields = doc.fields || {};
+    return {
+        scripts: fields.scriptsJson?.stringValue ? JSON.parse(fields.scriptsJson.stringValue) : [],
+        settings: fields.settingsJson?.stringValue ? JSON.parse(fields.settingsJson.stringValue) : {},
+        bannedIps: fields.bannedIpsJson?.stringValue ? JSON.parse(fields.bannedIpsJson.stringValue) : []
+    };
+}
+
+async function fbWrite(data) {
+    const fields = {};
+    if (data.scripts !== undefined) fields.scriptsJson = { stringValue: JSON.stringify(data.scripts) };
+    if (data.settings !== undefined) fields.settingsJson = { stringValue: JSON.stringify(data.settings) };
+    if (data.bannedIps !== undefined) fields.bannedIpsJson = { stringValue: JSON.stringify(data.bannedIps) };
+
+    const res = await fetch(FB_DOC_URL, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fields })
+    });
+    if (!res.ok) throw new Error('Firestore write failed: ' + res.status);
+    return await res.json();
+}
 
 // DOM Elements
 const scriptsTableBody = document.getElementById('scriptsTableBody');
@@ -81,22 +113,25 @@ document.querySelectorAll('.nav-tab-btn').forEach(btn => {
 
 async function loadStats() {
     try {
-        const res = await fetch('/api/db/stats');
-        if (res.ok) {
-            const stats = await res.json();
-            document.getElementById('statScriptsCount').textContent = (stats.totalScripts || 0).toLocaleString();
-            document.getElementById('statViewsCount').textContent = (stats.totalViews || 0).toLocaleString();
-            document.getElementById('statLikesCount').textContent = (stats.totalLikes || 0).toLocaleString();
-            document.getElementById('statBannedCount').textContent = (stats.totalBannedIps || 0).toLocaleString();
-        }
+        const totalViews = allScripts.reduce((s, x) => s + (x.views || 0), 0);
+        const totalLikes = allScripts.reduce((s, x) => s + (x.likes || 0), 0);
+        const el = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v.toLocaleString(); };
+        el('statScriptsCount', allScripts.length);
+        el('statViewsCount', totalViews);
+        el('statLikesCount', totalLikes);
+
+        // banned IPs count
+        try {
+            const data = await fbRead();
+            el('statBannedCount', (data.bannedIps || []).length);
+        } catch(_) { el('statBannedCount', 0); }
     } catch (e) {}
 }
 
 async function loadScripts() {
     try {
-        const res = await fetch('/api/scripts');
-        if (!res.ok) throw new Error('ไม่สามารถโหลดข้อมูลสคริปต์ได้');
-        allScripts = await res.json();
+        const data = await fbRead();
+        allScripts = data.scripts || [];
         renderScriptsTable(allScripts);
     } catch (err) {
         scriptsTableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--danger); padding: 30px;">เกิดข้อผิดพลาดในการโหลดสคริปต์: ${escapeHtml(err.message)}</td></tr>`;
@@ -197,21 +232,13 @@ if (btnBatchDelete) {
         if (!confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบสคริปต์ที่เลือก ${checked.length} รายการ?`)) return;
 
         try {
-            const res = await fetch('/api/scripts/delete-multiple', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ids: checked })
-            });
-            const data = await res.json();
-            if (data.success) {
-                showToast(`ลบสคริปต์ ${checked.length} รายการเรียบร้อยแล้ว`);
-                await loadScripts();
-                await loadStats();
-                if (checkAll) checkAll.checked = false;
-                updateBatchDeleteState();
-            } else {
-                alert('เกิดข้อผิดพลาดในการลบสคริปต์: ' + (data.error || 'ข้อผิดพลาดไม่ทราบสาเหตุ'));
-            }
+            allScripts = allScripts.filter(s => !checked.includes(s.id));
+            await fbWrite({ scripts: allScripts });
+            showToast(`ลบสคริปต์ ${checked.length} รายการเรียบร้อยแล้ว`);
+            renderScriptsTable(allScripts);
+            await loadStats();
+            if (checkAll) checkAll.checked = false;
+            updateBatchDeleteState();
         } catch (err) {
             alert('ข้อผิดพลาด: ' + err.message);
         }
@@ -256,19 +283,11 @@ window.openEditScriptModal = function(id) {
 window.deleteSingleScript = async function(id) {
     if (!confirm('คุณแน่ใจหรือไม่ว่าต้องการลบสคริปต์นี้?')) return;
     try {
-        const res = await fetch('/api/scripts/delete', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id })
-        });
-        const data = await res.json();
-        if (data.success) {
-            showToast('ลบสคริปต์เรียบร้อยแล้ว');
-            await loadScripts();
-            await loadStats();
-        } else {
-            alert('ข้อผิดพลาด: ' + data.error);
-        }
+        allScripts = allScripts.filter(s => s.id !== id);
+        await fbWrite({ scripts: allScripts });
+        showToast('ลบสคริปต์เรียบร้อยแล้ว');
+        renderScriptsTable(allScripts);
+        await loadStats();
     } catch (err) {
         alert('ข้อผิดพลาด: ' + err.message);
     }
@@ -282,7 +301,10 @@ if (cancelScriptModalBtn) cancelScriptModalBtn.addEventListener('click', () => s
 scriptForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const isEdit = Boolean(formScriptId.value);
-    const url = isEdit ? '/api/scripts/update' : '/api/scripts';
+
+    const now = new Date();
+    const thaiMonths = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+    const dateStr = `${thaiMonths[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
 
     const payload = {
         title: formTitle.value.trim(),
@@ -297,25 +319,24 @@ scriptForm.addEventListener('submit', async (e) => {
         likes: Number(formLikes.value) || 0
     };
 
-    if (isEdit) {
-        payload.id = formScriptId.value;
-    }
-
     try {
-        const res = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        if (data.success) {
-            scriptModal.style.display = 'none';
-            showToast(isEdit ? 'อัปเดตสคริปต์สำเร็จ' : 'เพิ่มสคริปต์ใหม่สำเร็จ');
-            await loadScripts();
-            await loadStats();
+        if (isEdit) {
+            payload.id = formScriptId.value;
+            const idx = allScripts.findIndex(s => s.id === payload.id);
+            if (idx !== -1) {
+                allScripts[idx] = { ...allScripts[idx], ...payload };
+            }
         } else {
-            alert('เกิดข้อผิดพลาดในการบันทึกสคริปต์: ' + (data.error || 'ข้อผิดพลาดไม่ทราบสาเหตุ'));
+            payload.id = 'script-' + Date.now();
+            payload.date = dateStr;
+            allScripts.unshift(payload);
         }
+
+        await fbWrite({ scripts: allScripts });
+        scriptModal.style.display = 'none';
+        showToast(isEdit ? 'อัปเดตสคริปต์สำเร็จ' : 'เพิ่มสคริปต์ใหม่สำเร็จ');
+        renderScriptsTable(allScripts);
+        await loadStats();
     } catch (err) {
         alert('ข้อผิดพลาด: ' + err.message);
     }
@@ -364,37 +385,37 @@ if (btnFetchRoblox) {
 
 async function loadConfig() {
     try {
-        const res = await fetch('/api/config');
-        if (!res.ok) return;
-        siteConfig = await res.json();
+        const data = await fbRead();
+        siteConfig = data.settings || {};
 
         // Populate Tab 2
-        document.getElementById('cfgSiteTitle').value = siteConfig.siteTitle || '';
-        document.getElementById('cfgSiteHandle').value = siteConfig.siteHandle || '';
-        document.getElementById('cfgLogoUrl').value = siteConfig.logoUrl || '';
-        document.getElementById('cfgAnnouncementLabel').value = siteConfig.announcementLabel || '';
-        document.getElementById('cfgAnnouncementText').value = siteConfig.announcementText || '';
-        document.getElementById('cfgDiscordUrl').value = siteConfig.discordUrl || '';
-        document.getElementById('cfgYoutubeUrl').value = siteConfig.youtubeUrl || '';
-        document.getElementById('cfgRedInstruction').value = siteConfig.redInstructionText || '';
-        document.getElementById('cfgVideoPreview').value = siteConfig.videoShowcasePreview || '';
-        document.getElementById('cfgVideoUrl').value = siteConfig.videoShowcaseUrl || '';
+        const setVal = (id, key) => { const el = document.getElementById(id); if (el) el.value = siteConfig[key] || ''; };
+        setVal('cfgSiteTitle', 'siteTitle');
+        setVal('cfgSiteHandle', 'siteHandle');
+        setVal('cfgLogoUrl', 'logoUrl');
+        setVal('cfgAnnouncementLabel', 'announcementLabel');
+        setVal('cfgAnnouncementText', 'announcementText');
+        setVal('cfgDiscordUrl', 'discordUrl');
+        setVal('cfgYoutubeUrl', 'youtubeUrl');
+        setVal('cfgRedInstruction', 'redInstructionText');
+        setVal('cfgVideoPreview', 'videoShowcasePreview');
+        setVal('cfgVideoUrl', 'videoShowcaseUrl');
 
         // Populate Tab 3 (Missions)
-        document.getElementById('cfgLockEnabled').value = String(siteConfig.lockEnabled !== false);
-        document.getElementById('cfgQuickBypassEnabled').value = String(siteConfig.quickBypassEnabled !== false);
-        document.getElementById('cfgMission1Label').value = siteConfig.mission1Label || '';
-        document.getElementById('cfgMission1Url').value = siteConfig.mission1Url || '';
-        document.getElementById('cfgMission2Label').value = siteConfig.mission2Label || '';
-        document.getElementById('cfgMission2Url').value = siteConfig.mission2Url || '';
-        document.getElementById('cfgMission3Label').value = siteConfig.mission3Label || '';
-        document.getElementById('cfgMission3Url').value = siteConfig.mission3Url || '';
-        document.getElementById('cfgLootlabsEnabled').value = String(Boolean(siteConfig.lootlabsEnabled));
-        document.getElementById('cfgLootlabsUrl').value = siteConfig.lootlabsTier1Url || '';
+        const setBool = (id, key, def) => { const el = document.getElementById(id); if (el) el.value = String(siteConfig[key] !== undefined ? siteConfig[key] : def); };
+        setBool('cfgLockEnabled', 'lockEnabled', true);
+        setBool('cfgQuickBypassEnabled', 'quickBypassEnabled', true);
+        setVal('cfgMission1Label', 'mission1Label');
+        setVal('cfgMission1Url', 'mission1Url');
+        setVal('cfgMission2Label', 'mission2Label');
+        setVal('cfgMission2Url', 'mission2Url');
+        setVal('cfgMission3Label', 'mission3Label');
+        setVal('cfgMission3Url', 'mission3Url');
+        setBool('cfgLootlabsEnabled', 'lootlabsEnabled', false);
+        setVal('cfgLootlabsUrl', 'lootlabsTier1Url');
 
-        // Render FAQs
         renderFaqList();
-    } catch (e) {}
+    } catch (e) { console.warn('loadConfig error:', e); }
 }
 
 const siteConfigForm = document.getElementById('siteConfigForm');
@@ -454,18 +475,9 @@ missionsConfigForm.addEventListener('submit', async (e) => {
 
 async function saveConfigToServer(patch) {
     try {
-        const res = await fetch('/api/config', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(patch)
-        });
-        const data = await res.json();
-        if (data.success) {
-            siteConfig = data.config;
-            showToast('บันทึกการตั้งค่าเรียบร้อยแล้ว');
-        } else {
-            alert('เกิดข้อผิดพลาดในการบันทึก: ' + data.error);
-        }
+        siteConfig = { ...siteConfig, ...patch };
+        await fbWrite({ settings: siteConfig });
+        showToast('บันทึกการตั้งค่าเรียบร้อยแล้ว');
     } catch (err) {
         alert('ข้อผิดพลาด: ' + err.message);
     }
@@ -549,10 +561,8 @@ const bannedIpsTableBody = document.getElementById('bannedIpsTableBody');
 
 async function loadBannedIps() {
     try {
-        const res = await fetch('/api/banned-ips');
-        if (!res.ok) return;
-        const list = await res.json();
-        renderBannedIpsTable(list);
+        const data = await fbRead();
+        renderBannedIpsTable(data.bannedIps || []);
     } catch (e) {}
 }
 
@@ -592,20 +602,19 @@ if (banForm) {
         if (!ip) return;
 
         try {
-            const res = await fetch('/api/admin-ban', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ip, durationHours, reason })
+            const data = await fbRead();
+            const bannedIps = data.bannedIps || [];
+            bannedIps.push({
+                ip,
+                banned_at: Date.now(),
+                banned_until: durationHours === 0 ? 0 : Date.now() + durationHours * 3600000,
+                reason
             });
-            const data = await res.json();
-            if (data.success) {
-                showToast(`ระงับ IP: ${ip} สำเร็จ`);
-                banForm.reset();
-                await loadBannedIps();
-                await loadStats();
-            } else {
-                alert('เกิดข้อผิดพลาด: ' + data.error);
-            }
+            await fbWrite({ bannedIps });
+            showToast(`ระงับ IP: ${ip} สำเร็จ`);
+            banForm.reset();
+            await loadBannedIps();
+            await loadStats();
         } catch (err) {
             alert('ข้อผิดพลาด: ' + err.message);
         }
@@ -615,19 +624,12 @@ if (banForm) {
 window.unbanIp = async function(ip) {
     if (!confirm(`คุณแน่ใจหรือไม่ว่าต้องการปลดแบน IP ${ip}?`)) return;
     try {
-        const res = await fetch('/api/admin-ban', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ip, action: 'unban' })
-        });
-        const data = await res.json();
-        if (data.success) {
-            showToast(`ปลดแบน IP: ${ip} สำเร็จ`);
-            await loadBannedIps();
-            await loadStats();
-        } else {
-            alert('ข้อผิดพลาด: ' + data.error);
-        }
+        const data = await fbRead();
+        const bannedIps = (data.bannedIps || []).filter(b => b.ip !== ip);
+        await fbWrite({ bannedIps });
+        showToast(`ปลดแบน IP: ${ip} สำเร็จ`);
+        await loadBannedIps();
+        await loadStats();
     } catch (err) {
         alert('ข้อผิดพลาด: ' + err.message);
     }
@@ -643,15 +645,13 @@ const restoreFileInput = document.getElementById('restoreFileInput');
 
 if (btnResetDefault) {
     btnResetDefault.addEventListener('click', async () => {
-        if (!confirm('คำเตือน: สคริปต์ปัจจุบันจะถูกแทนที่ด้วยสคริปต์เริ่มต้น ต้องการดำเนินการต่อหรือไม่?')) return;
+        if (!confirm('คำเตือน: สคริปต์ปัจจุบันจะถูกลบทั้งหมด ต้องการดำเนินการต่อหรือไม่?')) return;
         try {
-            const res = await fetch('/api/db/reset', { method: 'POST' });
-            const data = await res.json();
-            if (data.success) {
-                showToast('รีเซ็ตฐานข้อมูลเป็นค่าเริ่มต้นสำเร็จ');
-                await loadScripts();
-                await loadStats();
-            }
+            allScripts = [];
+            await fbWrite({ scripts: allScripts });
+            showToast('รีเซ็ตฐานข้อมูลสำเร็จ');
+            renderScriptsTable(allScripts);
+            await loadStats();
         } catch (err) {
             alert('ข้อผิดพลาด: ' + err.message);
         }
@@ -662,13 +662,11 @@ if (btnClearAll) {
     btnClearAll.addEventListener('click', async () => {
         if (!confirm('อันตราย: สคริปต์ทั้งหมดจะถูกลบถาวร! คุณแน่ใจหรือไม่?')) return;
         try {
-            const res = await fetch('/api/db/clear', { method: 'POST' });
-            const data = await res.json();
-            if (data.success) {
-                showToast('ลบสคริปต์ทั้งหมดเรียบร้อยแล้ว');
-                await loadScripts();
-                await loadStats();
-            }
+            allScripts = [];
+            await fbWrite({ scripts: allScripts });
+            showToast('ลบสคริปต์ทั้งหมดเรียบร้อยแล้ว');
+            renderScriptsTable(allScripts);
+            await loadStats();
         } catch (err) {
             alert('ข้อผิดพลาด: ' + err.message);
         }
@@ -689,20 +687,18 @@ if (restoreFileInput) {
                 return;
             }
 
-            const res = await fetch('/api/db/restore', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(json)
-            });
-            const data = await res.json();
-            if (data.success) {
-                showToast('กู้คืนฐานข้อมูลสำเร็จ');
-                await loadScripts();
-                await loadConfig();
-                await loadStats();
-            } else {
-                alert('การกู้คืนข้อมูลล้มเหลว: ' + data.error);
+            if (json.scripts) {
+                allScripts = json.scripts;
+                await fbWrite({ scripts: allScripts });
             }
+            if (json.config || json.settings) {
+                siteConfig = json.config || json.settings;
+                await fbWrite({ settings: siteConfig });
+            }
+            showToast('กู้คืนฐานข้อมูลสำเร็จ');
+            await loadScripts();
+            await loadConfig();
+            await loadStats();
         } catch (err) {
             alert('ไฟล์สำรองไม่ถูกต้อง: ' + err.message);
         } finally {
