@@ -1,81 +1,53 @@
 import React from 'react';
-import { Eye, Calendar, ChevronRight, Lock, KeyRound, Zap } from 'lucide-react';
+import { Eye } from 'lucide-react';
 
-const FALLBACK_THUMB = "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80";
+const FALLBACK_IMG = "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&auto=format&fit=crop&q=60";
 
 export default function ScriptCard({ script, onClick }) {
   const { title, game, tags = [], date, isKeyless, isExecutor, thumbnail, views = 0 } = script;
 
-  let pillType = 'keysystem';
-  let pillLabel = 'KEY SYSTEM';
-  let PillIcon = Lock;
-
+  let typeClass = 'keysystem';
+  let typeText = 'Key System';
   if (isExecutor) {
-    pillType = 'executor';
-    pillLabel = 'EXECUTOR';
-    PillIcon = Zap;
+    typeClass = 'executor';
+    typeText = 'Executor';
   } else if (isKeyless) {
-    pillType = 'keyless';
-    pillLabel = 'KEYLESS';
-    PillIcon = KeyRound;
+    typeClass = 'keyless';
+    typeText = 'Keyless';
   }
 
-  const formattedViews = views >= 1000 ? `${(views / 1000).toFixed(1)}k` : views;
+  const fmtViews = views >= 1000 ? `${(views / 1000).toFixed(1)}k` : String(views);
 
   return (
-    <article className="script-card" onClick={onClick}>
-      {/* Thumbnail Area */}
-      <div className="card-media">
+    <div className="card" onClick={onClick}>
+      <div className="card-thumb">
         <img
-          src={thumbnail || FALLBACK_THUMB}
-          alt={title}
-          className="card-img"
+          src={thumbnail || FALLBACK_IMG}
+          alt=""
           loading="lazy"
-          onError={(e) => {
-            e.currentTarget.src = FALLBACK_THUMB;
-          }}
+          onError={(e) => { e.currentTarget.src = FALLBACK_IMG; }}
         />
-        <div className="card-scrim"></div>
-
-        {/* Badges Overlay */}
-        <div className="card-badge-layer">
-          <span className={`type-pill ${pillType}`}>
-            <PillIcon size={12} />
-            {pillLabel}
-          </span>
-          <span className="views-chip">
-            <Eye size={12} />
-            {formattedViews}
-          </span>
+        <span className={`card-type ${typeClass}`}>{typeText}</span>
+        <span className="card-views">
+          <Eye size={11} />
+          {fmtViews}
+        </span>
+      </div>
+      <div className="card-info">
+        <div className="card-game">{game || 'Roblox'}</div>
+        <h3 className="card-title">{title}</h3>
+        {tags.length > 0 && (
+          <div className="card-tags">
+            {tags.slice(0, 3).map((t, i) => (
+              <span key={i} className="card-tag">{t}</span>
+            ))}
+          </div>
+        )}
+        <div className="card-bottom">
+          <span className="card-date">{date || ''}</span>
+          <span className="card-go">ดูสคริปต์ →</span>
         </div>
       </div>
-
-      {/* Body Area */}
-      <div className="card-body">
-        <span className="card-game-title">{game || 'Roblox Script'}</span>
-        <h3 className="card-title" title={title}>{title}</h3>
-
-        {/* Tags */}
-        <div className="card-tags">
-          {tags.slice(0, 3).map((tag, idx) => (
-            <span key={idx} className="script-tag">
-              #{tag}
-            </span>
-          ))}
-        </div>
-
-        {/* Footer */}
-        <div className="card-footer">
-          <span className="card-date">
-            <Calendar size={13} />
-            {date || 'ล่าสุด'}
-          </span>
-          <span className="card-action-btn">
-            ดูสคริปต์
-            <ChevronRight size={14} />
-          </span>
-        </div>
-      </div>
-    </article>
+    </div>
   );
 }

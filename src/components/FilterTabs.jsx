@@ -1,33 +1,27 @@
 import React from 'react';
-import { Globe, Zap, KeyRound, Lock, ArrowDownUp } from 'lucide-react';
 
-export default function FilterTabs({ activeTab, setActiveTab, counts, sortBy, setSortBy }) {
+export default function FilterTabs({ activeTab, setActiveTab, counts }) {
   const tabs = [
-    { id: 'all', label: 'ทั้งหมด', icon: Globe, count: counts.all },
-    { id: 'executor', label: 'ตัวรัน (Executor)', icon: Zap, count: counts.executor },
-    { id: 'keyless', label: 'ไม่ต้องผ่านคีย์ (Keyless)', icon: KeyRound, count: counts.keyless },
-    { id: 'keysystem', label: 'มีระบบคีย์ (KeySystem)', icon: Lock, count: counts.keysystem },
+    { id: 'all', label: 'ทั้งหมด', count: counts.all },
+    { id: 'keyless', label: 'Keyless', count: counts.keyless },
+    { id: 'keysystem', label: 'Key System', count: counts.keysystem },
+    { id: 'executor', label: 'Executor', count: counts.executor },
   ];
 
   return (
-    <div className="controls-wrapper">
-      <div className="container">
-        <div className="tabs-scroll-wrapper">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                className={`filter-tab ${isActive ? 'active' : ''}`}
-                onClick={() => setActiveTab(tab.id)}
-              >
-                <Icon size={16} />
-                <span>{tab.label}</span>
-                <span className="tab-badge">{tab.count}</span>
-              </button>
-            );
-          })}
+    <div className="tabs-bar">
+      <div className="wrap">
+        <div className="tabs-row">
+          {tabs.map((t) => (
+            <button
+              key={t.id}
+              className={`tab-btn ${activeTab === t.id ? 'on' : ''}`}
+              onClick={() => setActiveTab(t.id)}
+            >
+              {t.label}
+              <span className="tab-count">{t.count}</span>
+            </button>
+          ))}
         </div>
       </div>
     </div>
