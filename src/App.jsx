@@ -3,6 +3,7 @@ import Navbar from './components/Header';
 import FilterTabs from './components/FilterTabs';
 import ScriptCard from './components/ScriptCard';
 import ScriptModal from './components/ScriptModal';
+import SecurityGateModal from './components/SecurityGateModal';
 import Toast from './components/Toast';
 import { fetchScriptsFromFirebase, fetchSettingsFromFirebase } from './services/firebase';
 export default function App() {
@@ -22,6 +23,14 @@ export default function App() {
     announcementText: '',
     discordUrl: 'https://discord.gg',
     youtubeUrl: 'https://youtube.com',
+    gateEnabled: true,
+    gateProvider: 'shrinkearn',
+    gateProviderName: 'ShrinkEarn',
+    gateUrl: 'https://srnky.com/aehfqq0',
+    gateToken: 'spidey_vip',
+    gateExpiryHours: 24,
+    gateTutorialUrl: 'https://youtu.be/FdXsvivWhOw',
+    gateCustomMessage: '',
   });
   const [tab, setTab] = useState('all');
   const [search, setSearch] = useState('');
@@ -38,7 +47,13 @@ export default function App() {
       } catch (_) {}
       try {
         const s = await fetchSettingsFromFirebase();
-        if (s) setSettings(s);
+        if (s) {
+          setSettings((prev) => ({
+            ...prev,
+            ...s,
+            gateEnabled: s.gateEnabled !== false,
+          }));
+        }
       } catch (_) {}
     };
 
@@ -155,6 +170,8 @@ export default function App() {
       )}
 
       <Toast toasts={toasts} />
+
+      <SecurityGateModal settings={settings} onUnlock={toast} />
 
       <footer className="site-footer">
         <a href={settings.discordUrl || '#'} target="_blank" rel="noreferrer">Discord</a>

@@ -62,6 +62,14 @@ export async function fetchSettingsFromFirebase() {
     siteHandle: "@Spidey",
     announcementText: "",
     discordUrl: "https://discord.gg",
-    youtubeUrl: "https://youtube.com"
+    youtubeUrl: "https://youtube.com",
+    gateEnabled: true,
+    gateProvider: "shrinkearn",
+    gateProviderName: "ShrinkEarn",
+    gateUrl: "https://srnky.com/aehfqq0",
+    gateToken: "spidey_vip",
+    gateExpiryHours: 24,
+    gateTutorialUrl: "https://youtu.be/FdXsvivWhOw",
+    gateCustomMessage: ""
   };
 }

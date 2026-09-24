@@ -289,19 +289,55 @@
                         </div>
                     </div>
 
-                    <div class="form-section-title">ระบบสร้างรายได้ LootLabs Gate</div>
+                    <!-- ระบบสร้างรายได้ & ล็อคหน้าเว็บ (Security Access Gate) -->
+                    <div class="form-section-title" style="color: #38bdf8; display: flex; align-items: center; gap: 8px;">
+                        <span>🛡️ ระบบ Security Access Gate (ล็อคหน้าเว็บด้วยลิงก์ย่อ)</span>
+                    </div>
+
                     <div class="form-grid">
-                        <div class="form-group">
-                            <label>สถานะเกต LootLabs</label>
-                            <select class="form-control" id="cfgLootlabsEnabled">
-                                <option value="false">ปิดใช้งาน (ใช้ภารกิจ 3 สเต็ปด้านบน)</option>
-                                <option value="true">เปิดใช้งาน (ส่งผู้ใช้ไปยัง LootLabs เพื่อปลดล็อค)</option>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>สถานะระบบ Security Access Gate</label>
+                            <select class="form-control" id="cfgGateEnabled">
+                                <option value="true">เปิดใช้งาน (แสดงป็อปอัป Access Gate ล็อคเข้าเว็บ)</option>
+                                <option value="false">ปิดใช้งาน (เข้าเว็บไซต์ได้ทันทีโดยไม่ต้องผ่านลิงก์ย่อ)</option>
                             </select>
+                            <span class="form-hint">เปิด/ปิด การแสดงป็อปอัปบังคับเข้าผ่านลิงก์ย่อ</span>
                         </div>
-                        <div class="form-group">
-                            <label>ลิงก์ย่อ LootLabs (Shortlink URL)</label>
-                            <input type="url" class="form-control" id="cfgLootlabsUrl" placeholder="https://loot-link.com/s?...">
+
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>ลิงก์ย่อสำหรับให้ผู้ใช้กด (Shortlink URL)</label>
+                            <input type="url" class="form-control" id="cfgGateUrl" placeholder="https://srnky.com/... หรือ ลิงก์ย่อค่ายใดก็ได้">
+                            <span class="form-hint">ใส่ลิงก์ย่อที่ต้องการให้ผู้ใช้กดเพื่อปลดล็อคเว็บไซต์ (ใช้ได้ทุกค่าย)</span>
                         </div>
+
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>ลิงก์คลิป YouTube สอนวิธีผ่านลิงก์ (Tutorial Video URL)</label>
+                            <input type="url" class="form-control" id="cfgGateTutorialUrl" placeholder="https://youtu.be/FdXsvivWhOw">
+                            <span class="form-hint">ลิงก์คลิป YouTube สำหรับแสดงในปุ่ม "ดูคลิปสอนวิธีผ่านลิงก์"</span>
+                        </div>
+
+                        <!-- ลิงก์ปลายทาง (Target URL) สำหรับนำไปใส่ในเว็บย่อลิงก์ -->
+                        <div class="form-group" style="grid-column: 1 / -1; background: rgba(56, 189, 248, 0.06); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: var(--radius-md); padding: 14px 16px;">
+                            <label style="color: #38bdf8; font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                                ลิงก์ปลายทางสำหรับนำไปใส่ในเว็บย่อลิงก์ (Target / Destination URL)
+                            </label>
+                            <div style="display: flex; gap: 8px; margin-top: 8px;">
+                                <input type="text" class="form-control" id="cfgGateTargetUrl" readonly style="font-family: monospace; font-size: 13px; color: #38bdf8; background: #0b0f19; cursor: text;">
+                                <button type="button" class="btn btn-secondary btn-sm" id="btnCopyTargetUrl" style="white-space: nowrap; height: 38px; display: flex; align-items: center; gap: 6px;">
+                                    📋 คัดลอกลิงก์
+                                </button>
+                            </div>
+                            <span class="form-hint" style="color: #94a3b8; margin-top: 8px; display: block; line-height: 1.5; font-size: 12px;">
+                                💡 <b>วิธีให้คนผ่านลิงก์ย่อก่อนเข้าเว็บ:</b> ให้นำลิงก์ด้านบนนี้ ไปใส่ในช่อง <b>Target URL / Destination URL</b> บนเว็บย่อลิงก์ที่คุณใช้ (เช่น ShrinkEarn, LootLabs, Linkvertise ฯลฯ) เพื่อสร้างลิงก์ย่อ เมื่อคนทำรายการผ่านโฆษณาเสร็จ ระบบย่อลิงก์จะส่งคนกลับมาปลดล็อคเข้าเว็บนี้อัตโนมัติ <u>ป้องกันคนกดข้ามเองได้ 100%!</u>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 14px; display: flex; align-items: center; justify-content: flex-start;">
+                        <a href="/?lock=1" target="_blank" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+                            <span>🔄 ทดสอบเปิดหน้าเว็บเหมือนคนไม่เคยผ่านลิงก์ (จำลองคนเข้าใหม่)</span>
+                        </a>
                     </div>
 
                     <div style="margin-top: 32px; display: flex; justify-content: flex-end;">

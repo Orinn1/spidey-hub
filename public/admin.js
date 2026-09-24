@@ -603,7 +603,7 @@ async function loadConfig() {
         setVal('cfgVideoPreview', 'videoShowcasePreview');
         setVal('cfgVideoUrl', 'videoShowcaseUrl');
 
-        // Populate Tab 3 (Missions)
+        // Populate Tab 3 (Missions & Security Access Gate)
         const setBool = (id, key, def) => { const el = document.getElementById(id); if (el) el.value = String(siteConfig[key] !== undefined ? siteConfig[key] : def); };
         setBool('cfgLockEnabled', 'lockEnabled', true);
         setBool('cfgQuickBypassEnabled', 'quickBypassEnabled', true);
@@ -613,11 +613,37 @@ async function loadConfig() {
         setVal('cfgMission2Url', 'mission2Url');
         setVal('cfgMission3Label', 'mission3Label');
         setVal('cfgMission3Url', 'mission3Url');
-        setBool('cfgLootlabsEnabled', 'lootlabsEnabled', false);
-        setVal('cfgLootlabsUrl', 'lootlabsTier1Url');
+        
+        // Security Access Gate (มีแค่เปิด/ปิด, ลิงก์ย่อ, ลิงก์คลิปสอน)
+        setBool('cfgGateEnabled', 'gateEnabled', true);
+        setVal('cfgGateUrl', 'gateUrl', siteConfig.lootlabsTier1Url || 'https://srnky.com/aehfqq0');
+        setVal('cfgGateTutorialUrl', 'gateTutorialUrl', 'https://youtu.be/FdXsvivWhOw');
+
+        // Dynamic Target URL
+        const targetUrlInput = document.getElementById('cfgGateTargetUrl');
+        if (targetUrlInput) {
+            targetUrlInput.value = window.location.origin + '/?unlock=1';
+        }
 
         renderFaqList();
     } catch (e) { console.warn('loadConfig error:', e); }
+}
+
+// Copy button for Target URL
+const btnCopyTargetUrl = document.getElementById('btnCopyTargetUrl');
+if (btnCopyTargetUrl) {
+    btnCopyTargetUrl.addEventListener('click', () => {
+        const targetUrlInput = document.getElementById('cfgGateTargetUrl');
+        if (targetUrlInput && targetUrlInput.value) {
+            navigator.clipboard.writeText(targetUrlInput.value).then(() => {
+                showToast('คัดลอกลิงก์ปลายทางเรียบร้อยแล้ว!');
+            }).catch(() => {
+                targetUrlInput.select();
+                document.execCommand('copy');
+                showToast('คัดลอกลิงก์ปลายทางเรียบร้อยแล้ว!');
+            });
+        }
+    });
 }
 
 const siteConfigForm = document.getElementById('siteConfigForm');
@@ -647,7 +673,7 @@ siteConfigForm.addEventListener('submit', async (e) => {
     await saveConfigToServer(update);
 });
 
-// Missions Config Form
+// Missions & Gate Config Form
 const missionsConfigForm = document.getElementById('missionsConfigForm');
 const btnSaveMissionsTop = document.getElementById('btnSaveMissionsTop');
 
@@ -668,8 +694,10 @@ missionsConfigForm.addEventListener('submit', async (e) => {
         mission2Url: document.getElementById('cfgMission2Url').value.trim(),
         mission3Label: document.getElementById('cfgMission3Label').value.trim(),
         mission3Url: document.getElementById('cfgMission3Url').value.trim(),
-        lootlabsEnabled: document.getElementById('cfgLootlabsEnabled').value === 'true',
-        lootlabsTier1Url: document.getElementById('cfgLootlabsUrl').value.trim()
+        // Security Access Gate (มีแค่เปิด/ปิด, ลิงก์ย่อ, ลิงก์คลิปสอน)
+        gateEnabled: document.getElementById('cfgGateEnabled') ? document.getElementById('cfgGateEnabled').value === 'true' : true,
+        gateUrl: document.getElementById('cfgGateUrl') ? document.getElementById('cfgGateUrl').value.trim() : '',
+        gateTutorialUrl: document.getElementById('cfgGateTutorialUrl') ? document.getElementById('cfgGateTutorialUrl').value.trim() : ''
     };
 
     await saveConfigToServer(update);
