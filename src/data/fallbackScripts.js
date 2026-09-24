@@ -45,7 +45,7 @@ export const FALLBACK_SCRIPTS = [
   },
   {
     id: "script-4",
-    title: "Steal An Egg – ฟาร์มไข่อัตโนมัติ + Auto Steal 24 ชม (ZeroinHub)",
+    title: "Steal An Egg 🔥 ฟาร์มไข่อัตโนมัติ + Auto Steal 24 ชม (ZeroinHub)",
     game: "Steal An Egg",
     tags: ["All-Script", "Keyless", "Auto-Farm"],
     date: "22 ก.ย. 2026",

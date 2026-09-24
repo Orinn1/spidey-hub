@@ -22,12 +22,6 @@ a { color: inherit; text-decoration: none; }
 button { cursor: pointer; font-family: inherit; }
 img { display: block; max-width: 100%; }
 
-#root {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
 /* ---- Layout ---- */
 .wrap {
   max-width: 1160px;
@@ -57,37 +51,21 @@ img { display: block; max-width: 100%; }
 
 .nav-logo {
   font-weight: 700;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   color: #fff;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   white-space: nowrap;
   cursor: pointer;
-  user-select: none;
 }
 
-.nav-logo-text-group {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.nav-logo-title {
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: -0.2px;
-}
-
-.nav-logo-badge {
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.6px;
-  background: rgba(34, 197, 94, 0.12);
-  color: #4ade80;
-  border: 1px solid rgba(34, 197, 94, 0.28);
-  padding: 1px 5px;
-  border-radius: 4px;
+.nav-logo-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  flex-shrink: 0;
 }
 
 .nav-search {
@@ -211,15 +189,14 @@ img { display: block; max-width: 100%; }
 
 /* ---- Scripts Grid ---- */
 .scripts-section {
-  flex: 1;
-  padding: 24px 0 60px;
+  padding: 20px 0 60px;
 }
 
 .scripts-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .scripts-head-label {
@@ -234,23 +211,8 @@ img { display: block; max-width: 100%; }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-  gap: 18px;
-}
-
-/* Intelligent grid adaptations when few items are present */
-.grid.grid-items-1 {
-  grid-template-columns: minmax(300px, 460px);
-}
-
-.grid.grid-items-2 {
-  grid-template-columns: repeat(2, minmax(300px, 460px));
-}
-
-@media (max-width: 720px) {
-  .grid.grid-items-2 {
-    grid-template-columns: 1fr;
-  }
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
 }
 
 /* ---- Card ---- */
@@ -515,50 +477,42 @@ img { display: block; max-width: 100%; }
   line-height: 1.35;
 }
 
-/* ---- Sub2Unlock Refined (Eliminate AI Template Look) ---- */
+/* sub2unlock */
 .s2u-box {
-  background: #14171f;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 18px 20px;
-  text-align: left;
+  background: #1f1f1f;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
   margin-bottom: 20px;
 }
 
-.s2u-head-wrap {
-  margin-bottom: 14px;
-  text-align: left;
+.s2u-icon {
+  font-size: 1.8rem;
+  margin-bottom: 8px;
 }
 
-.s2u-head-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.95rem;
+.s2u-title {
+  font-size: 1rem;
   font-weight: 700;
   color: #fff;
-  margin-bottom: 3px;
-}
-
-.s2u-lock-pulse {
-  font-size: 1.05rem;
+  margin-bottom: 4px;
 }
 
 .s2u-desc {
-  font-size: 0.82rem;
-  color: #8892a0;
-  line-height: 1.4;
-  margin-bottom: 0;
+  font-size: 0.84rem;
+  color: #888;
+  margin-bottom: 16px;
 }
 
 .s2u-instruction {
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
   color: #fca5a5;
   padding: 10px 14px;
   border-radius: 8px;
-  font-size: 0.82rem;
-  margin-bottom: 14px;
+  font-size: 0.84rem;
+  margin-bottom: 16px;
   text-align: left;
   line-height: 1.4;
   display: flex;
@@ -569,187 +523,83 @@ img { display: block; max-width: 100%; }
 .s2u-missions-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   margin-bottom: 16px;
+  text-align: left;
 }
 
 .s2u-mission-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 14px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 10px;
-  transition: all 0.2s ease;
-}
-
-.s2u-mission-item:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.1);
+  padding: 10px 14px;
+  background: #161616;
+  border: 1px solid #282828;
+  border-radius: 8px;
+  transition: all 0.2s;
 }
 
 .s2u-mission-item.done {
-  background: rgba(34, 197, 94, 0.04);
-  border-color: rgba(34, 197, 94, 0.22);
+  border-color: rgba(34, 197, 94, 0.35);
+  background: rgba(34, 197, 94, 0.05);
 }
 
-.s2u-mission-left {
+.s2u-mission-info {
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex: 1;
-  min-width: 0;
+  gap: 10px;
 }
 
 .s2u-mission-num {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background: #1e2330;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #94a3b8;
+  background: #2a2a2a;
+  color: #aaa;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.76rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  flex-shrink: 0;
 }
 
 .s2u-mission-item.done .s2u-mission-num {
   background: #22c55e;
-  border-color: #22c55e;
   color: #000;
-}
-
-.s2u-mission-texts {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
 }
 
 .s2u-mission-label {
   font-size: 0.88rem;
-  color: #f1f5f9;
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.s2u-mission-subhint {
-  font-size: 0.75rem;
-  color: #64748b;
-  line-height: 1.3;
-}
-
-.text-done-success {
-  color: #4ade80;
+  color: #ddd;
   font-weight: 500;
 }
 
-.s2u-mission-action {
-  margin-left: 12px;
-  flex-shrink: 0;
-}
-
-.s2u-action-btn {
+.s2u-mission-action-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #1e2430;
-  color: #f8fafc;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 7px 14px;
-  border-radius: 7px;
-  font-size: 0.8rem;
+  background: #2a2a2a;
+  color: #fff;
+  border: 1px solid #3a3a3a;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.15s;
 }
 
-.s2u-action-btn:hover {
-  background: #22c55e;
-  border-color: #22c55e;
-  color: #000;
-  transform: translateY(-1px);
+.s2u-mission-action-btn:hover:not(:disabled) {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #fff;
 }
 
-.s2u-status-done {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.78rem;
-  font-weight: 600;
+.s2u-mission-action-btn.btn-done {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.4);
   color: #4ade80;
-  background: rgba(34, 197, 94, 0.12);
-  border: 1px solid rgba(34, 197, 94, 0.25);
-  padding: 5px 10px;
-  border-radius: 6px;
-}
-
-.s2u-status-verifying {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.78rem;
-  color: #facc15;
-  background: rgba(234, 179, 8, 0.1);
-  border: 1px solid rgba(234, 179, 8, 0.25);
-  padding: 5px 10px;
-  border-radius: 6px;
-}
-
-.s2u-spinner-dot {
-  width: 10px;
-  height: 10px;
-  border: 2px solid rgba(234, 179, 8, 0.3);
-  border-top-color: #facc15;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  display: inline-block;
-}
-
-.s2u-footer-action {
-  margin-top: 14px;
-}
-
-.s2u-progress-bar-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 8px 12px;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
-}
-
-.s2u-progress-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.75rem;
-  color: #718096;
-}
-
-.s2u-progress-info b {
-  color: #a0aec0;
-}
-
-.s2u-progress-track {
-  width: 100%;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.s2u-progress-fill {
-  height: 100%;
-  background: #22c55e;
-  border-radius: 999px;
-  transition: width 0.3s ease;
+  cursor: default;
 }
 
 .s2u-unlock-now-btn {
@@ -758,53 +608,26 @@ img { display: block; max-width: 100%; }
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: #22c55e;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
   color: #000;
   border: none;
-  padding: 11px 16px;
+  padding: 12px;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.3);
-  transition: all 0.15s ease;
+  animation: pulse 1.8s infinite;
 }
 
-.s2u-unlock-now-btn:hover {
-  background: #16a34a;
-  transform: translateY(-1px);
+@keyframes pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+  70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
 }
 
-.s2u-bypass-btn {
-  background: none;
-  border: none;
-  color: #666;
-  font-size: 0.75rem;
-  cursor: pointer;
-  text-decoration: underline;
-  padding: 4px 8px;
-}
-
-.s2u-bypass-btn:hover {
-  color: #aaa;
-}
-
-.s2u-lootlabs-btn {
-  background: linear-gradient(135deg, #3b82f6, #6366f1);
-  color: #fff;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 0.92rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.s2u-lootlabs-btn:hover {
-  opacity: 0.9;
+.s2u-progress-hint {
+  font-size: 0.8rem;
+  color: #777;
 }
 
 .s2u-bypass-btn {
@@ -954,126 +777,398 @@ img { display: block; max-width: 100%; }
   box-shadow: 0 4px 12px rgba(0,0,0,0.4);
 }
 
-/* ---- Footer (Polished & Grounded) ---- */
+/* ---- Footer ---- */
 .site-footer {
-  border-top: 1px solid #1c202a;
-  background: #0d1017;
-  padding: 38px 0 22px;
-  margin-top: auto;
+  border-top: 1px solid #1e1e1e;
+  padding: 24px 0;
+  text-align: center;
+  font-size: 0.78rem;
+  color: #444;
 }
 
-.footer-wrap {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 28px;
-  flex-wrap: wrap;
-  padding-bottom: 26px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+.site-footer a {
+  color: #666;
+  margin: 0 8px;
 }
 
-.footer-brand {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-width: 400px;
+.site-footer a:hover {
+  color: #aaa;
 }
 
-.footer-logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.footer-logo-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: -0.2px;
-}
-
-.footer-logo-badge {
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.6px;
-  background: rgba(34, 197, 94, 0.12);
-  color: #4ade80;
-  border: 1px solid rgba(34, 197, 94, 0.28);
-  padding: 1px 5px;
-  border-radius: 4px;
-}
-
-.footer-tagline {
-  font-size: 0.82rem;
-  color: #64748b;
-  line-height: 1.5;
-}
-
-.footer-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.footer-nav-title {
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #94a3b8;
-}
-
-.footer-nav-links {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.footer-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.82rem;
-  color: #94a3b8;
-  transition: color 0.15s ease;
-  margin: 0 !important;
-}
-
-.footer-link:hover {
-  color: #22c55e;
-}
-
-.footer-bottom {
-  padding-top: 18px;
-}
-
-.footer-bottom-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.75rem;
-  color: #555f6d;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.footer-disclaimer {
-  color: #475569;
-}
-
-/* ---- Mobile ---- */
+/* ==========================================================================
+   Mobile Optimization System (max-width: 640px)
+   ========================================================================== */
 @media (max-width: 640px) {
-  .navbar-inner { gap: 10px; }
-  .nav-search { max-width: 200px; }
-  .nav-discord span { display: none; }
-  .grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .card-info { padding: 10px; }
-  .card-title { font-size: 0.85rem; }
-  .card-tags { display: none; }
+  /* Layout wrap */
+  .wrap {
+    padding: 0 12px;
+  }
+
+  /* Navbar: 2-Row Modern Mobile Header */
+  .navbar {
+    padding: 10px 12px;
+    height: auto;
+  }
+  .navbar-inner {
+    height: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .nav-logo {
+    font-size: 1.05rem;
+    gap: 7px;
+  }
+  .nav-right {
+    margin-left: 0;
+  }
+  .nav-discord {
+    padding: 6px 12px;
+    font-size: 0.78rem;
+    gap: 5px;
+  }
+  .nav-discord span {
+    display: inline;
+  }
+  .nav-search {
+    order: 3;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 2px;
+  }
+  .nav-search input {
+    height: 42px;
+    font-size: 14px;
+    padding: 8px 12px 8px 38px;
+    border-radius: 10px;
+    background: #181818;
+    border-color: #2e2e2e;
+  }
+  .nav-search-icon {
+    left: 12px;
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Notice Bar */
+  .notice-bar {
+    padding: 7px 12px;
+    font-size: 0.76rem;
+    line-height: 1.4;
+  }
+
+  /* Category Tabs */
+  .tabs-bar {
+    padding: 14px 0 0;
+  }
+  .tabs-row {
+    padding: 0 2px 6px;
+    gap: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tab-btn {
+    padding: 7px 14px;
+    font-size: 0.8rem;
+    min-height: 36px;
+    border-radius: 999px;
+  }
+
+  /* Scripts Grid & Cards */
+  .scripts-section {
+    padding: 14px 0 45px;
+  }
+  .scripts-head {
+    margin-bottom: 12px;
+  }
+  .scripts-head-label {
+    font-size: 0.8rem;
+  }
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .card {
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  .card:hover {
+    transform: none;
+  }
+  .card-type {
+    font-size: 0.62rem;
+    padding: 2px 6px;
+    top: 6px;
+    left: 6px;
+    border-radius: 4px;
+  }
+  .card-views {
+    font-size: 0.62rem;
+    padding: 2px 5px;
+    top: 6px;
+    right: 6px;
+  }
+  .card-info {
+    padding: 9px 8px 10px;
+  }
+  .card-game {
+    font-size: 0.65rem;
+    margin-bottom: 3px;
+  }
+  .card-title {
+    font-size: 0.82rem;
+    line-height: 1.35;
+    margin-bottom: 8px;
+    min-height: 2.7em;
+  }
+  .card-tags {
+    display: none;
+  }
+  .card-bottom {
+    padding-top: 8px;
+  }
+  .card-date {
+    font-size: 0.65rem;
+  }
+  .card-go {
+    font-size: 0.72rem;
+  }
+
+  /* Script Detail Modal */
+  .modal-bg {
+    padding: 10px;
+    align-items: center;
+  }
+  .modal-box {
+    max-height: 90vh;
+    border-radius: 16px;
+    max-width: 100%;
+  }
+  .modal-top {
+    height: 140px;
+  }
+  .modal-close {
+    width: 32px;
+    height: 32px;
+    top: 10px;
+    right: 10px;
+  }
+  .modal-body {
+    padding: 16px 14px 22px;
+  }
+  .modal-game {
+    font-size: 0.7rem;
+    margin-bottom: 4px;
+  }
+  .modal-title {
+    font-size: 1.05rem;
+    line-height: 1.35;
+    margin-bottom: 14px;
+  }
+  .s2u-box {
+    padding: 16px 12px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+  }
+  .s2u-icon {
+    font-size: 1.6rem;
+    margin-bottom: 6px;
+  }
+  .s2u-title {
+    font-size: 0.95rem;
+  }
+  .s2u-desc {
+    font-size: 0.8rem;
+    margin-bottom: 12px;
+  }
+  .s2u-instruction {
+    font-size: 0.78rem;
+    padding: 8px 10px;
+    margin-bottom: 12px;
+  }
+  .s2u-missions-list {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .s2u-mission-item {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+  .s2u-mission-info {
+    gap: 8px;
+    min-width: 0;
+  }
+  .s2u-mission-num {
+    width: 22px;
+    height: 22px;
+    font-size: 0.72rem;
+  }
+  .s2u-mission-label {
+    font-size: 0.78rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .s2u-mission-action-btn {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+  .s2u-unlock-now-btn {
+    font-size: 0.88rem;
+    padding: 11px 16px;
+    border-radius: 10px;
+  }
+  .s2u-btn {
+    font-size: 0.88rem;
+    padding: 11px 16px;
+    border-radius: 10px;
+  }
+  .s2u-bypass-btn {
+    font-size: 0.76rem;
+    padding: 6px 12px;
+  }
+  .code-bar {
+    padding: 8px 12px;
+  }
+  .code-pre {
+    padding: 12px;
+    font-size: 0.76rem;
+    max-height: 180px;
+  }
+  .howto {
+    padding: 12px;
+    font-size: 0.78rem;
+    border-radius: 10px;
+  }
+
+  /* Toast area on mobile */
+  .toast-area {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    display: flex;
+    justify-content: center;
+  }
+  .toast-msg {
+    width: 100%;
+    max-width: 380px;
+    justify-content: center;
+    font-size: 0.82rem;
+    padding: 9px 14px;
+  }
+
+  /* Security Access Gate Modal on Mobile */
+  .lootlabs-gate-overlay {
+    padding: 14px 12px;
+    align-items: center;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .lootlabs-gate-box {
+    padding: 24px 16px 20px;
+    border-radius: 16px;
+    max-width: 100%;
+    margin: auto 0;
+  }
+  .lootlabs-gate-badge {
+    margin-bottom: 12px;
+    padding: 4px 10px;
+    font-size: 9.5px;
+  }
+  .lootlabs-gate-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+  .lootlabs-gate-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+  .lootlabs-gate-title {
+    font-size: 19px;
+    margin-bottom: 6px;
+  }
+  .lootlabs-gate-desc {
+    font-size: 12.5px;
+    line-height: 1.5;
+    margin-bottom: 16px;
+    padding: 0;
+  }
+  .btn-gate-lootlabs {
+    font-size: 13.5px;
+    padding: 12px 14px;
+    min-height: 48px;
+    border-radius: 10px;
+  }
+  .gate-pending-box {
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+  }
+  .gate-pending-header {
+    font-size: 12px;
+  }
+  .gate-pending-desc {
+    font-size: 11px;
+    margin: 4px 0 8px;
+  }
+  .btn-gate-verify {
+    font-size: 12px;
+    padding: 8px 10px;
+    min-height: 38px;
+  }
+  .gate-tutorial-row {
+    margin-top: 10px;
+  }
+  .btn-gate-tutorial {
+    font-size: 11.5px;
+    padding: 6px 14px;
+  }
+  .gate-divider {
+    margin: 16px 0 12px;
+  }
+  .gate-divider span {
+    font-size: 9.5px;
+  }
+  .gate-token-form {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .gate-token-input {
+    width: 100%;
+    height: 42px;
+    font-size: 14px;
+    padding: 0 12px;
+    border-radius: 8px;
+  }
+  .btn-gate-token {
+    width: 100%;
+    height: 40px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+  .gate-footer-hint {
+    margin-top: 14px;
+    font-size: 10.5px;
+    flex-wrap: wrap;
+    text-align: center;
+  }
 }
 
-@media (max-width: 420px) {
-  .grid { grid-template-columns: 1fr; }
+@media (max-width: 360px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .card-tags {
+    display: flex;
+  }
+  .card-title {
+    min-height: auto;
+  }
 }
 
 /* ==========================================================================
