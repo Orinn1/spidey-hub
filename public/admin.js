@@ -28,7 +28,18 @@ async function fbWrite(data) {
     const fieldPaths = [];
 
     if (data.scripts !== undefined) {
-        fields.scriptsJson = { stringValue: JSON.stringify(data.scripts) };
+        // Strip duplicate videoPreview base64 before saving to save space
+        const sanitizedScripts = data.scripts.map(s => {
+            if (s.videoPreview && (s.videoPreview === s.thumbnail || s.videoPreview.startsWith('data:image'))) {
+                return { ...s, videoPreview: '' };
+            }
+            return s;
+        });
+        const str = JSON.stringify(sanitizedScripts);
+        if (str.length > 1000000) {
+            throw new Error(`ขนาดข้อมูล (${(str.length / 1024).toFixed(0)} KB) ใกล้เต็มขีดจำกัด 1 MB ของ Firestore แนะนำให้ใช้ URL ลิงก์รูปภาพแทนการอัปโหลดไฟล์จากเครื่อง`);
+        }
+        fields.scriptsJson = { stringValue: str };
         fieldPaths.push('scriptsJson');
     }
     if (data.settings !== undefined) {
@@ -48,7 +59,16 @@ async function fbWrite(data) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ fields })
     });
-    if (!res.ok) throw new Error('Firestore write failed: ' + res.status);
+    if (!res.ok) {
+        let detail = 'Status ' + res.status;
+        try {
+            const errData = await res.json();
+            if (errData?.error?.message) {
+                detail = errData.error.message;
+            }
+        } catch (_) {}
+        throw new Error('Firestore write failed: ' + detail);
+    }
 
     // Cross-tab immediate sync
     try {
@@ -285,8 +305,8 @@ if (btnBatchDelete) {
 // 3. Script Modal (Add & Edit Any Field!)
 // =============================================================================
 
-// Image Compressor & Helper
-function compressImageFile(file, maxWidth = 800, maxHeight = 600, quality = 0.82) {
+// Image Compressor & Helper (บีบอัดให้ไม่เกินโควต้า 1MB ของ Firestore)
+function compressImageFile(file, maxWidth = 480, maxHeight = 320, quality = 0.65) {
     return new Promise((resolve, reject) => {
         if (!file || !file.type.startsWith('image/')) {
             return reject(new Error('กรุณาเลือกไฟล์รูปภาพเท่านั้น'));
@@ -310,13 +330,31 @@ function compressImageFile(file, maxWidth = 800, maxHeight = 600, quality = 0.82
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
+                let result = '';
                 try {
                     const webp = canvas.toDataURL('image/webp', quality);
                     if (webp.startsWith('data:image/webp')) {
-                        return resolve(webp);
+                        result = webp;
                     }
                 } catch (_) {}
-                resolve(canvas.toDataURL('image/jpeg', quality));
+                if (!result) {
+                    result = canvas.toDataURL('image/jpeg', quality);
+                }
+
+                // หากขนาดยังเกิน 50KB ให้ลดคุณภาพลงเพื่อประหยัดโควต้า Firestore
+                if (result.length > 50000) {
+                    try {
+                        const lowQ = canvas.toDataURL('image/webp', 0.45);
+                        if (lowQ.length < result.length && lowQ.startsWith('data:image/webp')) {
+                            result = lowQ;
+                        } else {
+                            const lowJpg = canvas.toDataURL('image/jpeg', 0.45);
+                            if (lowJpg.length < result.length) result = lowJpg;
+                        }
+                    } catch (_) {}
+                }
+
+                resolve(result);
             };
             img.onerror = () => reject(new Error('ไม่สามารถประมวลผลรูปภาพได้'));
         };
@@ -489,7 +527,7 @@ scriptForm.addEventListener('submit', async (e) => {
         game: formGame.value.trim() || 'Universal',
         tags: formTags.value ? formTags.value.split(',').map(t => t.trim()).filter(Boolean) : [],
         thumbnail: formThumb.value.trim(),
-        videoPreview: formVideo.value.trim() || formThumb.value.trim(),
+        videoPreview: formVideo.value.trim(),
         loadstring: formLoadstring.value.trim(),
         isKeyless: formIsKeyless.checked,
         isExecutor: formIsExecutor.checked,
